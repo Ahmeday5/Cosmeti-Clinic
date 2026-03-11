@@ -1,0 +1,31 @@
+.header {
+  height: 100px;
+  background: linear-gradient(to top, #6a994e, #6a994e, #a7c957);
+  z-index: 1030;
+  border-bottom-left-radius: 50px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.09);
+  color: var(--bg-main);
+}
+
+.header-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  background: var(--second-color);
+}
+
+// للشاشات الصغيرة
+@media (max-width: 576px) {
+  .header {
+    padding: 0 1rem;
+  }
+
+  .header-logo {
+    height: 40px;
+  }
+}

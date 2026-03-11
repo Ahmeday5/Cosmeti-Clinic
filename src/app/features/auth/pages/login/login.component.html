@@ -1,0 +1,141 @@
+<div class="login-page">
+  <div class="row">
+
+    <div class="col-lg-6">
+      <div class="login">
+        <div class="container-fluid mt-5 p-5">
+          <div class="row justify-content-center">
+            <div class="col-md-12">
+              <div class="text-center imgs mb-4">
+                <img src="/assets/img/logo.png" alt="login Logo" class="img-fluid">
+              </div>
+            </div>
+            <div class="col-md-10">
+              <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+                <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                  <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                </symbol>
+                <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                  <path
+                    d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                </symbol>
+              </svg>
+
+              <div class="header pt-4">
+                <h2 class="text-center">مرحباً بك مجدداً</h2>
+                <h6 class="text-center fw-500">سجل دخولك للوصول إلى لوحة التحكم</h6>
+              </div>
+              <form class="mt-5 box-shadow p-4" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+                <h2 class="text-center">تسجيل الدخول</h2>
+                <h5 class="text-center">أدخل بياناتك للدخول إلى حسابك</h5>
+                <div class="form-floating mt-5">
+                  <input type="email" [(ngModel)]="email" name="email" required email class="form-control text-end"
+                    dir="rtl" id="email" #emailControl="ngModel">
+                  <label for="email">ادخل البريد الالكتروني</label>
+
+                  @if (emailControl.invalid && (emailControl.touched || emailControl.dirty)) {
+                  <div class="text-danger small mt-1 text-end">
+                    @if (emailControl.errors?.['required']) { يرجى إدخال البريد الإلكتروني }
+                    @if (emailControl.errors?.['email']) { البريد الإلكتروني غير صحيح }
+                  </div>
+                  }
+                </div>
+                <div class="form-floating mt-3">
+                  <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" required
+                    minlength="6" class="form-control text-end" dir="rtl" id="password" #passwordControl="ngModel">
+                  <span class="password-toggle" (click)="togglePassword()">
+                    <i class="fa-regular {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}" style="color: var(--main-color);"></i>
+                  </span>
+                  <label for="password">ادخل كلمة المرور</label>
+                  @if (passwordControl.invalid && (passwordControl.touched || passwordControl.dirty)) {
+                  <div class="text-danger small mt-1 text-end">
+                    @if (passwordControl.errors?.['required']) { يرجى إدخال كلمة المرور }
+                    @if (passwordControl.errors?.['minlength']) { كلمة المرور يجب أن تكون 6 أحرف على الأقل }
+                  </div>
+                  }
+                </div>
+                <div class="forget">
+                  <a class="nav-link mt-2" href="#">هل نسيت كلمة المرور؟</a>
+                </div>
+                <div class="form-check mt-3 text-end">
+                  <input type="checkbox" class="form-check-input" id="rememberMe" [(ngModel)]="rememberMe"
+                    name="rememberMe">
+                  <label class="form-check-label" for="rememberMe">تذكرني</label>
+                </div>
+                @if (errorMessage) {
+                <div class="col-md-10">
+                  <div class="row justify-content-center">
+                    <div class="alert alert-danger d-flex align-items-center mt-4 w-75" role="alert">
+                      <svg class="bi flex-shrink-0 me-2 ms-3" width="24" height="24" role="img" aria-label="Danger:">
+                        <use xlink:href="#exclamation-triangle-fill" />
+                      </svg>
+                      <div>{{ errorMessage }}</div>
+                    </div>
+                  </div>
+                </div>
+                }
+                <div class="submit text-center mt-3">
+                  <button type="submit" class="btn fw-bold" [disabled]="isLoading"><span *ngIf="isLoading"
+                      class="spinner-border spinner-border-sm"></span>
+                    تسجيل الدخول</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6 d-none d-lg-block">
+      <div class="information p-5">
+        <div class="row d-flex justify-content-center align-items-center align-content-center flex-wrap">
+          <div class="col-12 imgs text-center">
+            <img src="/assets/img/logo.png" alt="logo" class="img-fluid">
+          </div>
+
+          <div class="col-12 text-center mt-5">
+            <h1 class="fw-bold">نظام الإدارة المتكامل للعيادات والصيدليات</h1>
+            <p class="fw-500">الحل الذكي لتنظيم وإدارة عملك الطبي بكفاءة وأمان</p>
+          </div>
+
+          <div class="col-12 mt-5">
+            <div class="row gap-3">
+              <div class="col-12">
+                <div class="info box-shadow d-flex">
+                  <div class="contetn">
+                    <i class="fa-solid fa-square-check mx-4"></i>
+                    <h4 class="d-inline-block">إدارة الوصفات الطبية والمخزون الدوائي بدقة</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="info box-shadow d-flex">
+                  <div class="contetn">
+                    <i class="fa-solid fa-square-check mx-4"></i>
+                    <h4 class="d-inline-block">متابعة الجلسات والملفات الطبية للمرضى</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="info box-shadow d-flex">
+                  <div class="contetn">
+                    <i class="fa-solid fa-square-check mx-4"></i>
+                    <h4 class="d-inline-block">تقارير مالية وحسابات يومية واضحة</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="info box-shadow d-flex">
+                  <div class="contetn">
+                    <i class="fa-solid fa-square-check mx-4"></i>
+                    <h4 class="d-inline-block">نظام فواتير ونقطة بيع متكامل</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

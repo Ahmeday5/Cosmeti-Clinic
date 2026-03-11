@@ -1,0 +1,134 @@
+<div class="sub-category">
+  <div class="container-fluid py-3">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="fw-500">منتجات العناية بالبشرة</h1>
+        <h3>التونرات</h3>
+      </div>
+    </div>
+
+    <div class="table-responsive custom-table">
+      <table class="table table-hover text-center custom-table-design ">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>الوصف</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>احمد</td>
+            <td>This cell is aligned to the top.</td>
+            <td> <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editSection"><i
+                  class="fas fa-edit"></i></button>
+              <button class="btn btn-delete"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-12 mt-4">
+      <div class="card p-4 ">
+        <div class="card-header fw-bold">
+          إضافة منتج
+        </div>
+
+        <div class="card-body">
+          <form>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="sectionName" class="form-label">نوع البشرة</label>
+                  <select name="skinType" id="skinType" class="form-control">
+                    <option value="normal">عادية</option>
+                    <option value="dry">جافة</option>
+                    <option value="oily">دهنية</option>
+                    <option value="combination">مختلطة</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="productName" class="form-label">الاسم</label>
+                  <input type="text" class="form-control" id="productName" name="productName" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="productImage" class="form-label">صوره المنتج</label>
+                  <input type="file" class="form-control" id="productImage" name="productImage" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="price" class="form-label">السعر</label>
+                  <input type="text" class="form-control" id="price" name="price" required>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-end align-items-center mt-3">
+              <button type="button" class="btn btn-danger fw-bold px-5" data-bs-dismiss="modal">الغاء</button>
+              <button type="button" class="btn btn-addModel me-4">حفظ</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- edit Modal -->
+    <div class="modal fade" id="editSection" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header justify-content-between">
+            <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">تعديل المنتج</h1>
+            <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="sectionName" class="form-label">نوع البشرة</label>
+                    <select name="skinType" id="skinType" class="form-control">
+                      <option value="normal">عادية</option>
+                      <option value="dry">جافة</option>
+                      <option value="oily">دهنية</option>
+                      <option value="combination">مختلطة</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="productName" class="form-label">الاسم</label>
+                    <input type="text" class="form-control" id="productName" name="productName" required>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="productImage" class="form-label">صوره المنتج</label>
+                    <input type="file" class="form-control" id="productImage" name="productImage" required>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="price" class="form-label">السعر</label>
+                    <input type="text" class="form-control" id="price" name="price" required>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-end align-items-center mt-3">
+              <button type="button" class="btn btn-danger fw-bold px-5" data-bs-dismiss="modal">الغاء</button>
+              <button type="button" class="btn btn-addModel me-4">تعديل</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+.app-layout {
+  display: flex;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+  background: var(--bg-main);
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+}

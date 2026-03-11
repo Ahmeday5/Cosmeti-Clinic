@@ -1,0 +1,230 @@
+:root {
+  --main-color: #8fc745;
+  --second-color: #000000;
+  --third-color: rgba(143, 199, 69, 0.3);
+  --bg-main: #ffffff;
+  --box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  --font-arabic: "Inter", sans-serif;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-optical-sizing: auto;
+  font-style: normal;
+  overflow: hidden;
+  font-family: var(--font-arabic) !important;
+}
+
+body {
+  margin: 0 !important;
+  font-family: var(--font-arabic) !important;
+  direction: rtl;
+  color: var(--main-color);
+}
+
+.box-shadow {
+  box-shadow: var(--box-shadow);
+}
+
+/**************************************************fw-custom***********************************************/
+.fw-100 {
+  font-weight: 100;
+}
+.fw-200 {
+  font-weight: 200;
+}
+.fw-300 {
+  font-weight: 300;
+}
+.fw-400 {
+  font-weight: 400;
+}
+.fw-500 {
+  font-weight: 500;
+}
+.fw-600 {
+  font-weight: 600;
+}
+.fw-700 {
+  font-weight: 700;
+}
+.fw-800 {
+  font-weight: 800;
+}
+
+/******************************************form*************************************************/
+.form-label {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--main-color);
+}
+
+.form-control {
+  border: 2px solid rgba(217, 217, 217, 0.5);
+  padding: 8px !important;
+  background: rgba(217, 217, 217, 0.5) !important;
+}
+
+.form-control:focus,
+.form-control:hover {
+  border: 2px solid var(--main-color) !important;
+  box-shadow: none !important;
+}
+
+/******************************************buttons*************************************************/
+.btn-addSection {
+  background-color: var(--main-color) !important;
+  color: var(--second-color) !important;
+  border: none !important;
+  padding: 7px 40px !important;
+  font-weight: 600;
+  transition: all 0.3s ease; /* الحركة الناعمة */
+  will-change: transform; /* تحسين الأداء */
+  font-weight: bold;
+}
+
+.btn-addSection:hover {
+  transform: scale(1.05);
+  border: none !important;
+  opacity: 0.8;
+}
+
+.btn-addSection:active {
+  transform: scale(0.97); /* تأثير الضغط */
+}
+
+.btn-addSection:focus {
+  box-shadow: none !important;
+}
+
+.btn-addModel {
+  background-color: var(--main-color) !important;
+  color: var(--bg-main) !important;
+  border: none !important;
+  padding: 7px 40px !important;
+  font-weight: 600;
+  transition: all 0.3s ease; /* الحركة الناعمة */
+  will-change: transform; /* تحسين الأداء */
+}
+
+.btn-addModel:hover {
+  border: none !important;
+  opacity: 0.8;
+}
+
+.btn-addModel:focus {
+  box-shadow: none !important;
+}
+
+/********************************************card*************************************************/
+.card {
+  border: 1px solid var(--main-color);
+  border-radius: 20px !important;
+  background-color: var(--bg-main) !important;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  color: var(--main-color);
+  cursor: pointer;
+  height: 100%;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.icon-wrapper {
+  width: 70% !important;
+  height: 125px !important;
+  border-radius: 10px;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: var(--main-color);
+  transition: all 0.3s ease;
+}
+
+.card:hover .icon-wrapper {
+  background: var(--main-color);
+  color: var(--bg-main);
+  transform: scale(1.1);
+}
+
+.card-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.51);
+  line-height: 1.6;
+}
+
+.card.borderPurple {
+  border: 1px solid rgba(99, 10, 195, 1) !important;
+  color: rgba(99, 10, 195, 1) !important;
+}
+
+.icon-wrapper.purple {
+  background: rgba(99, 10, 195, 0.3) !important;
+  color: rgba(99, 10, 195, 1) !important;
+}
+
+.card:hover .purple {
+  background: rgba(99, 10, 195, 1) !important;
+  color: var(--bg-main) !important;
+}
+
+.card.borderOrange {
+  border: 1px solid rgba(233, 95, 15, 1) !important;
+  color: rgba(233, 95, 15, 1) !important;
+}
+
+.icon-wrapper.orange {
+  background: rgba(233, 95, 15, 0.3) !important;
+  color: rgba(233, 95, 15, 1) !important;
+}
+
+.card:hover .orange {
+  background: rgba(233, 95, 15, 1) !important;
+  color: var(--bg-main) !important;
+}
+
+/*********************************************modal*********************************************************/
+
+.modal-content {
+  color: var(--main-color) !important;
+  border-radius: 33px !important;
+}
+
+/**********************************************table*********************************************************/
+
+.custom-table {
+  border: 1px solid var(--main-color);
+  border-radius: 15px !important;
+  background-color: var(--bg-main) !important;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.custom-table-design thead th {
+  color: var(--second-color);
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.custom-table-design tbody tr {
+  border: 1px solid transparent;
+}
+
+.custom-table-design td {
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--main-color);
+  padding: 7px !important;
+}
+
+/* Importing Bootstrap SCSS file. */
+@import "bootstrap/scss/bootstrap";
