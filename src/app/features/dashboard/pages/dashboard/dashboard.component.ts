@@ -23,6 +23,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
+  successMessageModel: string | null = null;
+  errorMessageModel: string | null = null;
+
   categoryForm: FormGroup;
   isEditMode = false;
   editingId: number | null = null;
@@ -119,6 +122,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    if (!this.selectedFile && !this.isEditMode) {
+      this.showErrorModel('يرجي رفع صورة قسم صالحة');
+      return; // مهم جدا عشان يمنع ارسال الداتا
+    }
+
     const formData = new FormData();
     formData.append('Title', this.categoryForm.get('title')!.value);
     formData.append('Description', this.categoryForm.get('description')!.value);
@@ -136,15 +144,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     request$.subscribe({
       next: (res) => {
-        this.showSuccess(
+        this.showSuccessModel(
           this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
         );
-        this.closeModal(); // ← إغلاق المودال بعد النجاح
+        this.closeModal();
         this.loadCategories();
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = err.message;
+        this.errorMessageModel = err.message;
         this.isLoading = false;
       },
     });
@@ -168,6 +176,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   private showSuccess(msg: string): void {
     this.successMessage = msg;
     setTimeout(() => (this.successMessage = null), 5000);
+  }
+
+  private showSuccessModel(msg: string): void {
+    this.successMessageModel = msg;
+    setTimeout(() => (this.successMessageModel = null), 5000);
+  }
+
+  private showErrorModel(msg: string): void {
+    this.errorMessageModel = msg;
+    setTimeout(() => (this.errorMessageModel = null), 5000);
   }
 
   goToCategory(categoryId: number) {

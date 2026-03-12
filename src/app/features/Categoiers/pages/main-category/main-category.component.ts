@@ -30,6 +30,9 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
+  successMessageModel: string | null = null;
+  errorMessageModel: string | null = null;
+
   categoryId!: number;
   isLoading = false;
 
@@ -46,7 +49,6 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private mainCategoryService: MainCategoryService,
     private service: MainCategoryService,
     private dashboardService: DashboardService,
     private fb: FormBuilder,
@@ -147,25 +149,32 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
   openAddModal() {
     this.isEditMode = false;
     this.form.reset();
+
     this.selectedFile = null;
     this.imagePreview = null;
 
-    // enable the sortOrder temporarily
-    this.form.get('sortOrder')?.enable();
+    // لو الصفحة مفتوحة بكاتجوري
+    if (this.categoryId) {
+      this.service.getNextSortOrder(this.categoryId).subscribe({
+        next: (res) => {
+          this.sorts = res.nextSortOrder;
 
-    this.service.getNextSortOrder(this.categoryId).subscribe({
-      next: (res) => {
-        this.sorts = res.nextSortOrder; // احفظ الرقم في المتغير
-        this.form.patchValue({
-          sortOrder: res.nextSortOrder,
-          categoryId: this.categoryId,
-        });
-      },
-      error: (err) => {
-        this.errorMessage = 'فشل الحصول على ترتيب العرض';
-        console.error(err);
-      },
-    });
+          this.form.patchValue({
+            sortOrder: res.nextSortOrder,
+            categoryId: this.categoryId,
+          });
+        },
+        error: () => {
+          this.errorMessage = 'فشل الحصول على ترتيب العرض';
+        },
+      });
+    } else {
+      // المستخدم لازم يختار الكاتجوري
+      this.form.patchValue({
+        sortOrder: null,
+        categoryId: null,
+      });
+    }
 
     this.modalInstance.show();
   }
@@ -194,6 +203,20 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
     });
   }
 
+  onCategoryChange(event: any) {
+    const categoryId = event.target.value;
+    if (!categoryId) return;
+    this.service.getNextSortOrder(categoryId).subscribe({
+      next: (res) => {
+        this.form.patchValue({
+          sortOrder: res.nextSortOrder,
+        });
+      },
+      error: () => {
+        this.errorMessageModel = 'فشل الحصول على ترتيب العرض';
+      },
+    });
+  }
   // ======================
   // FILE SELECT
   // ======================
@@ -217,6 +240,11 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    if (!this.selectedFile && !this.isEditMode) {
+      this.showErrorModel('يرجي رفع صورة قسم صالحة');
+      return; // مهم جدا عشان يمنع ارسال الداتا
+    }
+
     const formData = new FormData();
     formData.append('CategoryId', this.form.get('categoryId')?.value);
     formData.append('Title', this.form.get('title')?.value);
@@ -225,6 +253,8 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
 
     if (this.selectedFile) {
       formData.append('Image', this.selectedFile);
+    } else if (this.isEditMode && this.imagePreview) {
+      formData.append('Image', this.imagePreview);
     }
 
     this.isLoading = true;
@@ -235,17 +265,21 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
 
     request$.subscribe({
       next: () => {
-        this.showSuccess(
+        this.showSuccessModel(
           this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
         );
-
         this.modalInstance.hide();
         this.loadSubByCategory(this.categoryId);
         this.isLoading = false;
       },
-
       error: (err) => {
-        this.errorMessage = err.message;
+        if (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+          err.error?.message === 'SortOrder already exists for this SubCategory'
+        ) {
+          this.showErrorModel('رقم ترتيب العرض مستخدم بالفعل، جرب رقم أكبر');
+        } else {
+          this.errorMessageModel = err.message;
+        }
         this.isLoading = false;
       },
     });
@@ -273,10 +307,19 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
 
   showSuccess(msg: string) {
     this.successMessage = msg;
-
     setTimeout(() => {
       this.successMessage = null;
     }, 4000);
+  }
+
+  private showSuccessModel(msg: string): void {
+    this.successMessageModel = msg;
+    setTimeout(() => (this.successMessageModel = null), 5000);
+  }
+
+  private showErrorModel(msg: string): void {
+    this.errorMessageModel = msg;
+    setTimeout(() => (this.errorMessageModel = null), 5000);
   }
 
   goToSubCategory(id: number) {

@@ -70,6 +70,19 @@
             </button>
           </div>
 
+
+          @if(successMessageModel){
+          <div class="alert alert-success">
+            {{successMessageModel}}
+          </div>
+          }
+
+          @if(errorMessageModel){
+          <div class="alert alert-danger">
+            {{errorMessageModel}}
+          </div>
+          }
+
           <!-- ================= Form ================= -->
           <form [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="modal-body">
@@ -77,7 +90,7 @@
               <!-- ================= Category Select ================= -->
               <div class="mb-3">
                 <label class="form-label">القسم الرئيسي</label>
-                <select class="form-select" formControlName="categoryId">
+                <select class="form-select" formControlName="categoryId" (change)="onCategoryChange($event)">
                   <option value="">اختر القسم</option>
                   @for(cat of categories; track cat.id){
                   <option [value]="cat.id">
@@ -120,7 +133,7 @@
               <!-- ================= Sort Order ================= -->
               <div class="mb-3">
                 <label class="form-label">ترتيب العرض</label>
-                <input type="number" class="form-control" formControlName="sortOrder" [value]="sorts" readonly />
+                <input type="number" class="form-control" formControlName="sortOrder" [readonly]="categoryId" />
               </div>
 
               <!-- ================= Image Upload ================= -->

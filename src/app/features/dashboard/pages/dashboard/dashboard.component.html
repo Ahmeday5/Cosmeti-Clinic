@@ -46,7 +46,6 @@
     </div>
   </div>
 
-  <!-- Modal (نفس الـ ID القديم) -->
   <!-- ====================== المودال ====================== -->
   <div class="modal fade" id="addSectionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -57,6 +56,14 @@
           </h1>
           <button type="button" class="btn-close m-0" (click)="closeModal()" aria-label="Close"></button>
         </div>
+
+        <!-- Success / Error Messages -->
+        @if (successMessageModel) {
+        <div class="alert alert-success mt-3 fw-600">{{ successMessageModel }}</div>
+        }
+        @if (errorMessageModel) {
+        <div class="alert alert-danger mt-3 fw-600">{{ errorMessageModel }}</div>
+        }
 
         <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
           <div class="modal-body">
