@@ -1,4 +1,4 @@
-<div class="sub-category">
+<!--<div class="sub-category">
   <div class="container-fluid py-3">
     <div class="row">
       <div class="col-sm-6">
@@ -210,8 +210,6 @@
       </div>
     </div>
 
-
-    <!-- add Modal -->
     <div class="modal fade" id="addSection" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
       aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -240,7 +238,7 @@
       </div>
     </div>
 
-    <!-- edit Modal -->
+
     <div class="modal fade" id="editSection" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
       aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -263,6 +261,172 @@
             <div class="modal-footer d-flex justify-content-around align-items-center">
               <button type="button" class="btn btn-addModel">تعديل</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">الغاء</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>-->
+
+<div class="sub-category">
+  <div class="container-fluid py-3">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1 class="fw-500">{{ subCategoryName || 'القسم الفرعي' }}</h1>
+        <h3>اختر القسم الذي تريد الوصول اليه</h3>
+      </div>
+      <div class="col-sm-6 mt-2 mt-sm-0 d-flex justify-content-sm-end align-items-center">
+        <button class="btn btn-addSection fw-bold" (click)="openAddModal()">
+          اضافة قسم جديد
+        </button>
+      </div>
+    </div>
+
+    @if(successMessage){
+    <div class="alert alert-success">
+      {{successMessage}}
+    </div>
+    }
+
+    @if(errorMessage){
+    <div class="alert alert-danger">
+      {{errorMessage}}
+    </div>
+    }
+
+    <div class="row mt-1 g-3">
+      @for (head of headcontents; track head.id) {
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+
+        <div class="card d-flex justify-content-center align-items-center text-center p-4"
+          (click)="goToProducts(head.id)" style="cursor:pointer">
+          <!-- زرار التعديل والحذف (بروفيشنال في أعلى اليمين) -->
+          <div class="p-2 d-flex justify-content-start gap-2 w-100">
+            <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(head.id); $event.stopPropagation()">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteHead(head.id); $event.stopPropagation()">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="icon-wrapper mb-3">
+            <img [src]="head.imageUrl" [alt]="head.title" class="img-fluid rounded" style="width: 100%; height: 100%;">
+          </div>
+          <h4 class="card-title fw-600 mb-2">
+            {{ head.title }}
+          </h4>
+          <p class="card-subtitle mb-0">
+            تاريخ الانشاء : {{formatDate(head.createdAt)}}
+          </p>
+        </div>
+      </div>
+      }
+    </div>
+
+
+    <!-- Modal -->
+    <!-- ====================== Modal Add / Edit SubCategory ====================== -->
+
+    <div class="modal fade" id="subCategoryModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <!-- ================= Header ================= -->
+          <div class="modal-header justify-content-between">
+            <h1 class="modal-title fs-5 fw-bold">
+              {{ isEditMode ? 'تعديل المحتوي الراسي' : 'إضافة محتوي راسي جديد' }}
+            </h1>
+            <button type="button" class="btn-close m-0" (click)="modalInstance.hide()" aria-label="Close">
+            </button>
+          </div>
+
+
+          @if(successMessageModel){
+          <div class="alert alert-success">
+            {{successMessageModel}}
+          </div>
+          }
+
+          @if(errorMessageModel){
+          <div class="alert alert-danger">
+            {{errorMessageModel}}
+          </div>
+          }
+
+          <!-- ================= Form ================= -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="modal-body">
+
+              <!-- ================= Category Select ================= -->
+              <div class="mb-3">
+                <label class="form-label">القسم الفرعي</label>
+                <select class="form-select" formControlName="SubCategoryId" (change)="onCategoryChange($event)">
+                  <option [ngValue]="null" disabled>اختر القسم</option>
+                  @for(cat of subCategories; track cat.id){
+                  <option [value]="cat.id">
+                    {{cat.title}}
+                  </option>
+                  }
+                </select>
+                @if(form.get('SubCategoryId')?.invalid && form.get('SubCategoryId')?.touched){
+                <small class="text-danger">
+                  يجب اختيار القسم الفرعي
+                </small>
+                }
+              </div>
+
+              <!-- ================= Title ================= -->
+
+              <div class="mb-3">
+                <label class="form-label">اسم المحتوي الراسي</label>
+                <input type="text" class="form-control" formControlName="title">
+                @if(form.get('title')?.invalid && form.get('title')?.touched){
+                <small class="text-danger">
+                  الاسم مطلوب (3 أحرف على الأقل)
+                </small>
+                }
+              </div>
+
+              <!-- ================= Sort Order ================= -->
+              <div class="mb-3">
+                <label class="form-label">رقم ترتيب العرض</label>
+                <input type="number" class="form-control" formControlName="sortOrder" [readonly]="SubCategoryId" />
+                @if(form.get('sortOrder')?.invalid && form.get('sortOrder')?.touched){
+                <small class="text-danger">
+                  رقم ترتيب العرض مطلوب
+                </small>
+                }
+              </div>
+
+              <!-- ================= Image Upload ================= -->
+
+              <div class="mb-3">
+                <label class="form-label">الصورة</label>
+                <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
+                <!-- preview -->
+                @if(imagePreview){
+                <div class="mt-3 text-center">
+                  <img [src]="imagePreview" class="img-fluid rounded" style="max-height:180px">
+                </div>
+                }
+              </div>
+            </div>
+
+            <!-- ================= Footer ================= -->
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="modalInstance.hide()">
+                إلغاء
+              </button>
+
+              <button type="submit" class="btn btn-addModel" [disabled]="isLoading || form.invalid">
+                <!-- spinner -->
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2">
+                </span>
+                {{ isEditMode ? 'حفظ التعديل' : 'إضافة' }}
+              </button>
             </div>
           </form>
         </div>

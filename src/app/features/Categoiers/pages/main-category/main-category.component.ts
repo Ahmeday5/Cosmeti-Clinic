@@ -54,13 +54,13 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
   ) {
     this.form = this.fb.group({
-      categoryId: ['', Validators.required],
+      categoryId: [null, Validators.required],
 
       title: ['', [Validators.required, Validators.minLength(3)]],
 
       description: ['', [Validators.required, Validators.minLength(10)]],
 
-      sortOrder: [],
+      sortOrder: ['', [Validators.required]],
     });
   }
 
@@ -269,11 +269,15 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
           this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
         );
         this.modalInstance.hide();
-        this.loadSubByCategory(this.categoryId);
+        if (this.categoryId) {
+          this.loadSubByCategory(this.categoryId);
+        } else {
+          this.loadAll();
+        }
         this.isLoading = false;
       },
       error: (err) => {
-        if (                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+        if (
           err.error?.message === 'SortOrder already exists for this SubCategory'
         ) {
           this.showErrorModel('رقم ترتيب العرض مستخدم بالفعل، جرب رقم أكبر');
@@ -295,7 +299,11 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
     this.service.delete(id).subscribe({
       next: () => {
         this.showSuccess('تم الحذف بنجاح');
-        this.loadSubByCategory(this.categoryId);
+        if (this.categoryId) {
+          this.loadSubByCategory(this.categoryId);
+        } else {
+          this.loadAll();
+        }
       },
       error: (err) => (this.errorMessage = err.message),
     });

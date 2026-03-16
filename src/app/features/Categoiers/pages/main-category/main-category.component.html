@@ -6,7 +6,7 @@
         <h3>اختر القسم الذي تريد الوصول اليه</h3>
       </div>
       <div class="col-sm-6 mt-2 mt-sm-0 d-flex justify-content-sm-end align-items-center">
-        <button class="btn btn-addSection" (click)="openAddModal()">
+        <button class="btn btn-addSection fw-bold" (click)="openAddModal()">
           اضافة قسم جديد
         </button>
       </div>
@@ -91,7 +91,7 @@
               <div class="mb-3">
                 <label class="form-label">القسم الرئيسي</label>
                 <select class="form-select" formControlName="categoryId" (change)="onCategoryChange($event)">
-                  <option value="">اختر القسم</option>
+                  <option [ngValue]="null" disabled>اختر القسم</option>
                   @for(cat of categories; track cat.id){
                   <option [value]="cat.id">
                     {{cat.title}}
@@ -132,8 +132,13 @@
 
               <!-- ================= Sort Order ================= -->
               <div class="mb-3">
-                <label class="form-label">ترتيب العرض</label>
+                <label class="form-label">رقم ترتيب العرض</label>
                 <input type="number" class="form-control" formControlName="sortOrder" [readonly]="categoryId" />
+                @if(form.get('sortOrder')?.invalid && form.get('sortOrder')?.touched){
+                <small class="text-danger">
+                  رقم ترتيب العرض مطلوب
+                </small>
+                }
               </div>
 
               <!-- ================= Image Upload ================= -->

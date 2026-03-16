@@ -15,7 +15,7 @@ export const MAIN_CATEGORY_ROUTES: Routes = [
       import('./pages/main-category/main-category.component').then(
         (m) => m.MainCategoryComponent,
       ),
-    title: 'الأقسام الفرعية حسب الكاتجوري',
+    title: 'الأقسام الفرعية حسب القسم الرئيسي',
   },
   {
     path: 'sub-category',
@@ -23,6 +23,14 @@ export const MAIN_CATEGORY_ROUTES: Routes = [
       import('./pages/sub-category/sub-category.component').then(
         (m) => m.SubCategoryComponent,
       ),
-    title: 'الأقسام الفرعية',
+    title: 'المحتوي الراسي',
+  },
+  {
+    path: 'sub-category/:subcategoryId',
+    loadComponent: () =>
+      import('./pages/sub-category/sub-category.component').then(
+        (m) => m.SubCategoryComponent,
+      ),
+     title: 'المحتوي الراسي حسب القسم الفرعي',
   },
 ];

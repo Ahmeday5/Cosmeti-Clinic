@@ -1,134 +1,225 @@
 <div class="sub-category">
   <div class="container-fluid py-3">
     <div class="row">
-      <div class="col-12">
-        <h1 class="fw-500">منتجات العناية بالبشرة</h1>
-        <h3>التونرات</h3>
+      <div class="col-sm-6">
+        <h1 class="fw-500">{{ headContentName || 'المحتوي الراسي' }}</h1>
+      </div>
+      <div class="col-sm-6 mt-2 mt-sm-0 d-flex justify-content-sm-end align-items-center">
+        <button class="btn btn-addSection fw-bold" (click)="openAddModal()">
+          اضافة بلوك جديد
+        </button>
       </div>
     </div>
 
-    <div class="table-responsive custom-table">
+    @if(successMessage){
+    <div class="alert alert-success">
+      {{successMessage}}
+    </div>
+    }
+
+    @if(errorMessage){
+    <div class="alert alert-danger">
+      {{errorMessage}}
+    </div>
+    }
+
+    <div class="table-responsive custom-table mt-3">
       <table class="table table-hover text-center custom-table-design ">
         <thead>
           <tr>
             <th>#</th>
+            <th>الصورة</th>
             <th>الاسم</th>
-            <th>الوصف</th>
+            <th>النوع</th>
+            <th>رقم الترتيب</th>
+            <th>معلومات إضافية</th>
+            <th>تاريخ الانشاء</th>
             <th>الإجراءات</th>
           </tr>
         </thead>
         <tbody>
+          @for (product of Products; track product.id) {
           <tr>
-            <td>1</td>
-            <td>احمد</td>
-            <td>This cell is aligned to the top.</td>
-            <td> <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editSection"><i
+            <td>{{$index + 1}}</td>
+            <td>@if(product.type === 'Image' || product.type === 'ListItems'){
+              @if(product.imageUrl){
+              <img [src]="product.imageUrl" alt="imgProduct"
+                style="width:80px;height:80px;object-fit:cover;border-radius:6px">
+              }
+              }
+            </td>
+            <td>{{product.title}}</td>
+            <td>{{ getBlockTypeLabel(product.type) }}</td>
+            <td>{{product.sortOrder}}</td>
+            <td>
+              @if(product.type === 'Text'){
+              {{product.data?.text || product.data?.value}}
+              }
+
+              @if(product.type === 'VideoList'){
+              <a [href]="product.data?.value" target="_blank" class="text-primary">
+                مشاهدة الفيديو
+              </a>
+              }
+
+              @if(product.type === 'ListItems'){
+              {{product.data?.value}}
+              }
+            </td>
+            <td>{{formatDate(product.createdAt)}}</td>
+            <td>
+              <button class="btn btn-edit" (click)="openEditModal(product.id); $event.stopPropagation()"><i
                   class="fas fa-edit"></i></button>
-              <button class="btn btn-delete"><i class="fas fa-trash"></i></button>
+              <button class="btn btn-delete" (click)="deleteProduct(product.id); $event.stopPropagation()"><i
+                  class="fas fa-trash"></i></button>
             </td>
           </tr>
+          }
         </tbody>
       </table>
     </div>
 
-    <div class="col-12 mt-4">
-      <div class="card p-4 ">
-        <div class="card-header fw-bold">
-          إضافة منتج
-        </div>
-
-        <div class="card-body">
-          <form>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="sectionName" class="form-label">نوع البشرة</label>
-                  <select name="skinType" id="skinType" class="form-control">
-                    <option value="normal">عادية</option>
-                    <option value="dry">جافة</option>
-                    <option value="oily">دهنية</option>
-                    <option value="combination">مختلطة</option>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="productName" class="form-label">الاسم</label>
-                  <input type="text" class="form-control" id="productName" name="productName" required>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="productImage" class="form-label">صوره المنتج</label>
-                  <input type="file" class="form-control" id="productImage" name="productImage" required>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="price" class="form-label">السعر</label>
-                  <input type="text" class="form-control" id="price" name="price" required>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer d-flex justify-content-end align-items-center mt-3">
-              <button type="button" class="btn btn-danger fw-bold px-5" data-bs-dismiss="modal">الغاء</button>
-              <button type="button" class="btn btn-addModel me-4">حفظ</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- edit Modal -->
-    <div class="modal fade" id="editSection" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="subCategoryModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
+          <!-- ================= Header ================= -->
           <div class="modal-header justify-content-between">
-            <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">تعديل المنتج</h1>
-            <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h1 class="modal-title fs-5 fw-bold">
+              {{ isEditMode ? 'تعديل المحتوي الراسي' : 'إضافة محتوي راسي جديد' }}
+            </h1>
+            <button type="button" class="btn-close m-0" (click)="modalInstance.hide()" aria-label="Close">
+            </button>
           </div>
-          <form>
+
+
+          @if(successMessageModel){
+          <div class="alert alert-success">
+            {{successMessageModel}}
+          </div>
+          }
+
+          @if(errorMessageModel){
+          <div class="alert alert-danger">
+            {{errorMessageModel}}
+          </div>
+          }
+
+          <!-- ================= Form ================= -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="modal-body">
-              <div class="row">
-                <div class="col-12">
-                  <div class="form-group">
-                    <label for="sectionName" class="form-label">نوع البشرة</label>
-                    <select name="skinType" id="skinType" class="form-control">
-                      <option value="normal">عادية</option>
-                      <option value="dry">جافة</option>
-                      <option value="oily">دهنية</option>
-                      <option value="combination">مختلطة</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="form-group">
-                    <label for="productName" class="form-label">الاسم</label>
-                    <input type="text" class="form-control" id="productName" name="productName" required>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="form-group">
-                    <label for="productImage" class="form-label">صوره المنتج</label>
-                    <input type="file" class="form-control" id="productImage" name="productImage" required>
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="form-group">
-                    <label for="price" class="form-label">السعر</label>
-                    <input type="text" class="form-control" id="price" name="price" required>
-                  </div>
-                </div>
+
+              <!-- ================= Category Select ================= -->
+              <div class="mb-3">
+                <label class="form-label">المحتوي الراسي</label>
+                <select class="form-select" formControlName="headContentId" (change)="onCategoryChange($event)">
+                  <option [ngValue]="null" disabled>اختر المحتوي</option>
+                  @for(head of headcontents; track head.id){
+                  <option [value]="head.id">
+                    {{head.title}}
+                  </option>
+                  }
+                </select>
+                @if(form.get('headContentId')?.invalid && form.get('headContentId')?.touched){
+                <small class="text-danger">
+                  يجب اختيار المحتوي الراسي
+                </small>
+                }
               </div>
+
+              <!-- ================= BlockType ================= -->
+
+              <div class="mb-3">
+                <label class="form-label">النوع</label>
+                <select class="form-select" formControlName="BlockType" (change)="onBlockTypeChange()">
+                  <option [ngValue]="null" disabled>اختر النوع</option>
+                  @for(type of blockTypes; track type.value){
+                  <option [value]="type.value">
+                    {{type.label}}
+                  </option>
+                  }
+                </select>
+                @if(form.get('BlockType')?.invalid && form.get('BlockType')?.touched){
+                <small class="text-danger">
+                  النوع مطلوب (3 أحرف على الأقل)
+                </small>
+                }
+              </div>
+
+              <!-- ================= Title ================= -->
+
+              @if(selectedBlockType){
+              <div class="mb-3">
+                <label class="form-label">الاسم</label>
+                <input type="text" class="form-control" formControlName="title">
+                @if(form.get('title')?.invalid && form.get('title')?.touched){
+                <small class="text-danger">
+                  الاسم مطلوب (3 أحرف على الأقل)
+                </small>
+                }
+              </div>
+              }
+
+              <!-- ================= DataJson ================= -->
+
+              @if(selectedBlockType === 'Text' || selectedBlockType === 'VideoList' || selectedBlockType ===
+              'ListItems'){
+              <div class="mb-3">
+                <label class="form-label">{{dataLabel}}</label>
+                <input type="text" class="form-control" formControlName="DataJson" [placeholder]="dataLabel">
+                @if(form.get('DataJson')?.invalid && form.get('DataJson')?.touched){
+                <small class="text-danger">
+                  الاسم مطلوب (3 أحرف على الأقل)
+                </small>
+                }
+              </div>
+              }
+              <!-- ================= Sort Order ================= -->
+              <div class="mb-3">
+                <label class="form-label">رقم ترتيب العرض</label>
+                <input type="number" class="form-control" formControlName="sortOrder" [readonly]="headContentId" />
+                @if(form.get('sortOrder')?.invalid && form.get('sortOrder')?.touched){
+                <small class="text-danger">
+                  رقم ترتيب العرض مطلوب
+                </small>
+                }
+              </div>
+
+              <!-- ================= Image Upload ================= -->
+              @if(selectedBlockType === 'Image' || selectedBlockType ===
+              'ListItems'){
+              <div class="mb-3">
+                <label class="form-label">الصورة</label>
+                <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
+                <!-- preview -->
+                @if(imagePreview){
+                <div class="mt-3 text-center">
+                  <img [src]="imagePreview" class="img-fluid rounded" style="max-height:180px">
+                </div>
+                }
+              </div>
+              }
+
             </div>
-            <div class="modal-footer d-flex justify-content-end align-items-center mt-3">
-              <button type="button" class="btn btn-danger fw-bold px-5" data-bs-dismiss="modal">الغاء</button>
-              <button type="button" class="btn btn-addModel me-4">تعديل</button>
+
+            <!-- ================= Footer ================= -->
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="modalInstance.hide()">
+                إلغاء
+              </button>
+
+              <button type="submit" class="btn btn-addModel" [disabled]="isLoading || form.invalid">
+                <!-- spinner -->
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2">
+                </span>
+                {{ isEditMode ? 'حفظ التعديل' : 'إضافة' }}
+              </button>
             </div>
           </form>
         </div>
       </div>
     </div>
+
   </div>
 </div>
