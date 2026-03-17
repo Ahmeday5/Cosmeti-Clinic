@@ -19,11 +19,10 @@ import { Category } from '../../models/dashboard.model'; // ← تأكد من ا
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   categories: Category[] = [];
-  isLoading = false;
+  hasLoaded = false;
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  successMessageModel: string | null = null;
   errorMessageModel: string | null = null;
 
   categoryForm: FormGroup;
@@ -65,15 +64,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   // ====================== تحميل الكاتيجوريز ======================
   loadCategories(): void {
-    this.isLoading = true;
+
     this.categoryService.getAll().subscribe({
       next: (data) => {
         this.categories = data;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
       error: (err) => {
         this.errorMessage = err.message;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
     });
   }
@@ -135,7 +134,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       formData.append('Image', this.selectedFile);
     }
 
-    this.isLoading = true;
 
     const request$ =
       this.isEditMode && this.editingId
@@ -144,16 +142,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     request$.subscribe({
       next: (res) => {
-        this.showSuccessModel(
+        this.showSuccess(
           this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
         );
         this.closeModal();
         this.loadCategories();
-        this.isLoading = false;
       },
       error: (err) => {
         this.errorMessageModel = err.message;
-        this.isLoading = false;
       },
     });
   }
@@ -162,30 +158,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   deleteCategory(id: number): void {
     if (!confirm('هل أنت متأكد من حذف هذا القسم؟')) return;
 
-    this.isLoading = true;
     this.categoryService.delete(id).subscribe({
       next: (res) => {
         this.showSuccess('تم الحذف بنجاح');
         this.loadCategories();
       },
       error: (err) => (this.errorMessage = err.message),
-      complete: () => (this.isLoading = false),
+      complete: () => (""),
     });
   }
 
   private showSuccess(msg: string): void {
     this.successMessage = msg;
-    setTimeout(() => (this.successMessage = null), 5000);
-  }
-
-  private showSuccessModel(msg: string): void {
-    this.successMessageModel = msg;
-    setTimeout(() => (this.successMessageModel = null), 5000);
+    setTimeout(() => (this.successMessage = null), 2000);
   }
 
   private showErrorModel(msg: string): void {
     this.errorMessageModel = msg;
-    setTimeout(() => (this.errorMessageModel = null), 5000);
+    setTimeout(() => (this.errorMessageModel = null), 3000);
   }
 
   goToCategory(categoryId: number) {

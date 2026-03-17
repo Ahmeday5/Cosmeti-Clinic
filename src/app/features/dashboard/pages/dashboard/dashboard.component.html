@@ -20,6 +20,10 @@
 
     <div class="row mt-1 g-3">
       <!-- Dynamic Cards -->
+      @if(!hasLoaded) {
+      <!-- فاضي خالص عشان عندك loader global -->
+      }
+      @else if(categories.length > 0) {
       @for (cat of categories; track cat.id) {
       <div class="col-12 col-sm-6 col-lg-4">
         <div class="card d-flex justify-content-center align-items-center text-center p-4 position-relative"
@@ -43,6 +47,11 @@
         </div>
       </div>
       }
+      }@else {
+      <div class="not-found d-flex justify-content-center align-items-center">
+        <h1 class="fw-bold">لا توجد بيانات</h1>
+      </div>
+      }
     </div>
   </div>
 
@@ -57,10 +66,6 @@
           <button type="button" class="btn-close m-0" (click)="closeModal()" aria-label="Close"></button>
         </div>
 
-        <!-- Success / Error Messages -->
-        @if (successMessageModel) {
-        <div class="alert alert-success mt-3 fw-600">{{ successMessageModel }}</div>
-        }
         @if (errorMessageModel) {
         <div class="alert alert-danger mt-3 fw-600">{{ errorMessageModel }}</div>
         }
@@ -99,8 +104,7 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">إلغاء</button>
-            <button type="submit" class="btn btn-addModel" [disabled]="isLoading || categoryForm.invalid">
-              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            <button type="submit" class="btn btn-addModel" [disabled]="categoryForm.invalid">
               {{ isEditMode ? 'حفظ التعديل' : 'إضافة' }}
             </button>
           </div>

@@ -5,3 +5,12 @@
 .form-group {
   margin-bottom: 15px;
 }
+
+.content-product {
+  background: var(--bg-main);
+  box-shadow: var(--box-shadow);
+  padding: 20px;
+  margin: 12px 0;
+  border-radius: 12px;
+  border: 1px solid var(--main-color);
+}

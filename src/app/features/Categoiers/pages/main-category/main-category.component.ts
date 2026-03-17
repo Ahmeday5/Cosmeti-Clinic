@@ -26,15 +26,13 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
 
   sorts: any;
   categoryName: string = '';
-
+  hasLoaded = false;
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  successMessageModel: string | null = null;
   errorMessageModel: string | null = null;
 
   categoryId!: number;
-  isLoading = false;
 
   form: FormGroup;
   isEditMode = false;
@@ -109,16 +107,15 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
   // ======================
 
   loadAll() {
-    this.isLoading = true;
     this.service.getAll().subscribe({
       next: (data) => {
         this.subCategories = data;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
 
       error: (err) => {
         this.errorMessage = err.message;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
     });
   }
@@ -128,17 +125,16 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
   // ======================
 
   loadSubByCategory(id: number) {
-    this.isLoading = true;
 
     this.service.getByCategoryId(id).subscribe({
       next: (data) => {
         this.subCategories = data;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
 
       error: (err) => {
         this.errorMessage = err.message;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
     });
   }
@@ -257,15 +253,13 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
       formData.append('Image', this.imagePreview);
     }
 
-    this.isLoading = true;
-
     const request$ = this.isEditMode
       ? this.service.update(this.editingId!, formData)
       : this.service.create(formData);
 
     request$.subscribe({
       next: () => {
-        this.showSuccessModel(
+        this.showSuccess(
           this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
         );
         this.modalInstance.hide();
@@ -274,7 +268,6 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
         } else {
           this.loadAll();
         }
-        this.isLoading = false;
       },
       error: (err) => {
         if (
@@ -284,7 +277,6 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
         } else {
           this.errorMessageModel = err.message;
         }
-        this.isLoading = false;
       },
     });
   }
@@ -317,12 +309,7 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
     this.successMessage = msg;
     setTimeout(() => {
       this.successMessage = null;
-    }, 4000);
-  }
-
-  private showSuccessModel(msg: string): void {
-    this.successMessageModel = msg;
-    setTimeout(() => (this.successMessageModel = null), 5000);
+    }, 3000);
   }
 
   private showErrorModel(msg: string): void {

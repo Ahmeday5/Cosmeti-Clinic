@@ -23,60 +23,24 @@
     </div>
     }
 
-    <div class="table-responsive custom-table mt-3">
-      <table class="table table-hover text-center custom-table-design ">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>الصورة</th>
-            <th>الاسم</th>
-            <th>النوع</th>
-            <th>رقم الترتيب</th>
-            <th>معلومات إضافية</th>
-            <th>تاريخ الانشاء</th>
-            <th>الإجراءات</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (product of Products; track product.id) {
-          <tr>
-            <td>{{$index + 1}}</td>
-            <td>@if(product.type === 'Image' || product.type === 'ListItems'){
-              @if(product.imageUrl){
-              <img [src]="product.imageUrl" alt="imgProduct"
-                style="width:80px;height:80px;object-fit:cover;border-radius:6px">
-              }
-              }
-            </td>
-            <td>{{product.title}}</td>
-            <td>{{ getBlockTypeLabel(product.type) }}</td>
-            <td>{{product.sortOrder}}</td>
-            <td>
-              @if(product.type === 'Text'){
-              {{product.data?.text || product.data?.value}}
-              }
-
-              @if(product.type === 'VideoList'){
-              <a [href]="product.data?.value" target="_blank" class="text-primary">
-                مشاهدة الفيديو
-              </a>
-              }
-
-              @if(product.type === 'ListItems'){
-              {{product.data?.value}}
-              }
-            </td>
-            <td>{{formatDate(product.createdAt)}}</td>
-            <td>
-              <button class="btn btn-edit" (click)="openEditModal(product.id); $event.stopPropagation()"><i
-                  class="fas fa-edit"></i></button>
-              <button class="btn btn-delete" (click)="deleteProduct(product.id); $event.stopPropagation()"><i
-                  class="fas fa-trash"></i></button>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
+    <div class="content-product">
+      <div class="row">
+        @if(!hasLoaded) {
+        <!-- فاضي خالص عشان عندك loader global -->
+        }
+        @else if(Products.length > 0) {
+        @for (product of Products; track product.id) {
+        <div class="col-12">
+          <app-product-block [product]="product" (edit)="openEditModal($event)" (delete)="deleteProduct($event)">
+          </app-product-block>
+        </div>
+        }
+        }@else {
+        <div class="not-found d-flex justify-content-center align-items-center">
+          <h1 class="fw-bold">لا توجد بيانات</h1>
+        </div>
+        }
+      </div>
     </div>
 
     <div class="modal fade" id="subCategoryModal" tabindex="-1" aria-hidden="true">
@@ -86,18 +50,11 @@
           <!-- ================= Header ================= -->
           <div class="modal-header justify-content-between">
             <h1 class="modal-title fs-5 fw-bold">
-              {{ isEditMode ? 'تعديل المحتوي الراسي' : 'إضافة محتوي راسي جديد' }}
+              {{ isEditMode ? 'تعديل منتج' : 'إضافة منتج جديد' }}
             </h1>
             <button type="button" class="btn-close m-0" (click)="modalInstance.hide()" aria-label="Close">
             </button>
           </div>
-
-
-          @if(successMessageModel){
-          <div class="alert alert-success">
-            {{successMessageModel}}
-          </div>
-          }
 
           @if(errorMessageModel){
           <div class="alert alert-danger">
@@ -209,10 +166,7 @@
                 إلغاء
               </button>
 
-              <button type="submit" class="btn btn-addModel" [disabled]="isLoading || form.invalid">
-                <!-- spinner -->
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2">
-                </span>
+              <button type="submit" class="btn btn-addModel" [disabled]="form.invalid">
                 {{ isEditMode ? 'حفظ التعديل' : 'إضافة' }}
               </button>
             </div>

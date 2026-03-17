@@ -1,0 +1,62 @@
+<div class="card">
+
+  <!-- Header -->
+  <div class="card-header">
+    <h3>{{product.title}}</h3>
+
+    <div class="badge bg-success">
+      {{getBlockTypeLabel(product.type)}}
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="card-body">
+
+    <ng-container [ngSwitch]="product.type">
+
+      <!-- Text -->
+      <p *ngSwitchCase="'Text'" class="text">
+        {{product.data?.value}}
+      </p>
+
+      <!-- Image -->
+      <img *ngSwitchCase="'Image'" [src]="product.imageUrl" class="image">
+
+      <!-- List -->
+      <div *ngSwitchCase="'ListItems'" class="list">
+        <img [src]="product.imageUrl" class="image mb-3">
+        <p>{{product.data?.value}}</p>
+      </div>
+
+      <!-- Video -->
+      <a *ngSwitchCase="'VideoList'"
+         [href]="product.data?.value"
+         target="_blank"
+         class="video-link">
+        ▶ مشاهدة الفيديو
+      </a>
+
+    </ng-container>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+
+    <span class="date">
+      {{product.createdAt | date:'yyyy-MM-dd'}}
+    </span>
+
+    <div class="actions">
+      <button class="btn edit" (click)="edit.emit(product.id)">
+        <i class="fas fa-edit"></i>
+      </button>
+
+      <button class="btn delete" (click)="delete.emit(product.id)">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+
+  </div>
+
+</div>

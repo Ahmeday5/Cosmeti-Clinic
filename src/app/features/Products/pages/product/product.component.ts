@@ -11,11 +11,17 @@ import { headcontent } from '../../../Categoiers/models/sub-category.model';
 import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import { SubCategoryService } from '../../../Categoiers/services/sub-category.service';
+import { ProductBlockComponent } from '../../../../shared/components/product-block/product-block.component';
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    ProductBlockComponent,
+  ],
   templateUrl: './product.component.html',
   styleUrl: './product.component.scss',
 })
@@ -29,11 +35,9 @@ export class ProductComponent implements OnInit, AfterViewInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  successMessageModel: string | null = null;
   errorMessageModel: string | null = null;
 
   headContentId!: number;
-  isLoading = false;
 
   form: FormGroup;
   isEditMode = false;
@@ -47,6 +51,8 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   // modal
   public modalInstance: any;
+
+  hasLoaded = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -139,17 +145,15 @@ export class ProductComponent implements OnInit, AfterViewInit {
   // ======================
 
   loadProduct(id: number) {
-    this.isLoading = true;
-
     this.service.getByHeadContentId(id).subscribe({
       next: (data) => {
         this.Products = data;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
 
       error: (err) => {
         this.errorMessage = err.message;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
     });
   }
@@ -285,22 +289,19 @@ export class ProductComponent implements OnInit, AfterViewInit {
       formData.append('Image', this.imagePreview);
     }
 
-    this.isLoading = true;
-
     const request$ = this.isEditMode
       ? this.service.update(this.editingId!, formData)
       : this.service.create(formData);
 
     request$.subscribe({
       next: () => {
-        this.showSuccessModel(
+        this.showSuccess(
           this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
         );
         this.modalInstance.hide();
         if (this.headContentId) {
           this.loadProduct(this.headContentId);
         }
-        this.isLoading = false;
       },
       error: (err) => {
         if (
@@ -310,7 +311,6 @@ export class ProductComponent implements OnInit, AfterViewInit {
         } else {
           this.errorMessageModel = err.message;
         }
-        this.isLoading = false;
       },
     });
   }
@@ -341,12 +341,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
     this.successMessage = msg;
     setTimeout(() => {
       this.successMessage = null;
-    }, 4000);
-  }
-
-  private showSuccessModel(msg: string): void {
-    this.successMessageModel = msg;
-    setTimeout(() => (this.successMessageModel = null), 5000);
+    }, 3000);
   }
 
   private showErrorModel(msg: string): void {

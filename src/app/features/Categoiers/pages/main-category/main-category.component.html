@@ -25,6 +25,10 @@
     }
 
     <div class="row mt-1 g-3">
+      @if(!hasLoaded) {
+      <!-- فاضي خالص عشان عندك loader global -->
+      }
+      @else if(subCategories.length > 0) {
       @for (sub of subCategories; track sub.id) {
       <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
 
@@ -51,6 +55,12 @@
         </div>
       </div>
       }
+      }@else {
+      <div class="not-found d-flex justify-content-center align-items-center">
+        <h1 class="fw-bold">لا توجد بيانات</h1>
+      </div>
+      }
+
     </div>
 
 
@@ -69,13 +79,6 @@
             <button type="button" class="btn-close m-0" (click)="modalInstance.hide()" aria-label="Close">
             </button>
           </div>
-
-
-          @if(successMessageModel){
-          <div class="alert alert-success">
-            {{successMessageModel}}
-          </div>
-          }
 
           @if(errorMessageModel){
           <div class="alert alert-danger">
@@ -162,10 +165,7 @@
                 إلغاء
               </button>
 
-              <button type="submit" class="btn btn-addModel" [disabled]="isLoading || form.invalid">
-                <!-- spinner -->
-                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2">
-                </span>
+              <button type="submit" class="btn btn-addModel" [disabled]="form.invalid">
                 {{ isEditMode ? 'حفظ التعديل' : 'إضافة' }}
               </button>
             </div>

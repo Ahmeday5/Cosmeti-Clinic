@@ -31,11 +31,10 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  successMessageModel: string | null = null;
   errorMessageModel: string | null = null;
 
   SubCategoryId!: number;
-  isLoading = false;
+   hasLoaded = false;
 
   form: FormGroup;
   isEditMode = false;
@@ -108,16 +107,15 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
   // ======================
 
   loadAll() {
-    this.isLoading = true;
     this.service.getAll().subscribe({
       next: (data) => {
         this.headcontents = data;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
 
       error: (err) => {
         this.errorMessage = err.message;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
     });
   }
@@ -127,17 +125,16 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
   // ======================
 
   loadHeadContent(id: number) {
-    this.isLoading = true;
 
     this.service.getBySubCategoryId(id).subscribe({
       next: (data) => {
         this.headcontents = data;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
 
       error: (err) => {
         this.errorMessage = err.message;
-        this.isLoading = false;
+        this.hasLoaded = true;
       },
     });
   }
@@ -258,15 +255,13 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
       formData.append('Image', this.imagePreview);
     }
 
-    this.isLoading = true;
-
     const request$ = this.isEditMode
       ? this.service.update(this.editingId!, formData)
       : this.service.create(formData);
 
     request$.subscribe({
       next: () => {
-        this.showSuccessModel(
+        this.showSuccess(
           this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
         );
         this.modalInstance.hide();
@@ -275,7 +270,6 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
         } else {
           this.loadAll();
         }
-        this.isLoading = false;
       },
       error: (err) => {
         if (
@@ -285,7 +279,6 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
         } else {
           this.errorMessageModel = err.message;
         }
-        this.isLoading = false;
       },
     });
   }
@@ -319,11 +312,6 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.successMessage = null;
     }, 4000);
-  }
-
-  private showSuccessModel(msg: string): void {
-    this.successMessageModel = msg;
-    setTimeout(() => (this.successMessageModel = null), 5000);
   }
 
   private showErrorModel(msg: string): void {

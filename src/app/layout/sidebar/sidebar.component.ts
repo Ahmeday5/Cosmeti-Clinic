@@ -300,7 +300,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'الاقسام الفرعية',
             path: 'categories/main-category',
-            icons: 'fas fa-chart-line',
+            icons: 'fas fa-layer-group',
             isOpen: false,
           },
         ],
@@ -308,9 +308,9 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         items: [
           {
-            label: 'المحتوي الراسي',
+            label: 'المحتوي الرأسي',
             path: 'categories/sub-category',
-            icons: 'fas fa-chart-line',
+            icons: 'fas fa-th-large',
             isOpen: false,
           },
         ],
@@ -318,9 +318,9 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       {
         items: [
           {
-            label: 'التقارير',
-            path: 'report',
-            icons: 'fas fa-chart-line',
+            label: 'الاشعارات',
+            path: 'Notificaion/notificaion',
+            icons: 'fas fa-bell',
             isOpen: false,
           },
         ],

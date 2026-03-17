@@ -16,7 +16,7 @@ export const routes: Routes = [
       },
     ],
   },
-  
+
   // 🔹 Main Layout (Dashboard)
   {
     path: '',
@@ -35,6 +35,13 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./features/Products/product.routes').then(
             (m) => m.MAIN_PRODUCT_ROUTES,
+          ),
+      },
+      {
+        path: 'Notificaion',
+        loadChildren: () =>
+          import('./features/Notificaion/notification.routes').then(
+            (m) => m.NOTIFICATION_ROUTES,
           ),
       },
       {
