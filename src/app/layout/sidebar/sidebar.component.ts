@@ -110,7 +110,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
- ngAfterViewInit(): void {
+  ngAfterViewInit(): void {
     window.addEventListener('resize', () => this.updateSidebarState());
 
     this.searchSub = fromEvent(this.searchInputRef.nativeElement, 'input')
@@ -244,57 +244,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         ],
       },
-      /*{
-        items: [
-          {
-            label: 'التجميل اللاجراحي',
-            icons: 'fas fa-syringe',
-            isOpen: false,
-            submenu: [
-              {
-                key: 'ادوية وعلاجات اساسية',
-                path: 'PayToBayya',
-                icon: 'fas fa-pills',
-              },
-              {
-                key: 'حالات الجلدية الاساسية',
-                path: 'PayToBayya',
-                icon: 'fas fa-notes-medical',
-              },
-              {
-                key: 'روشتات OTC',
-                path: 'PayToBayya',
-                icon: 'fas fa-file-prescription',
-              },
-              {
-                key: 'مستحضرات التجميل',
-                path: 'PayToBayya',
-                icon: 'fas fa-pump-soap',
-              },
-              {
-                key: 'العناية بالبشره',
-                path: 'PayToBayya',
-                icon: 'fas fa-spa',
-              },
-              {
-                key: 'العناية بالشعر',
-                path: 'PayToBayya',
-                icon: 'fas fa-cut',
-              },
-              {
-                key: 'روتينات العنايه بالبشره والشعر',
-                path: 'PayToBayya',
-                icon: 'fas fa-list-check',
-              },
-              {
-                key: 'اختر تصميمك',
-                path: 'PayToBayya',
-                icon: 'fas fa-palette',
-              },
-            ],
-          },
-        ],
-      },*/
       {
         items: [
           {

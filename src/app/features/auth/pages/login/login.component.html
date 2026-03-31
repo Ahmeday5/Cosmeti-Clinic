@@ -29,10 +29,10 @@
               <form class="mt-5 box-shadow p-4" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
                 <h2 class="text-center">تسجيل الدخول</h2>
                 <h5 class="text-center">أدخل بياناتك للدخول إلى حسابك</h5>
-                <div class="form-floating mt-5">
+                <div class="form-group mt-5">
+                  <label for="email">ادخل البريد الالكتروني</label>
                   <input type="email" [(ngModel)]="email" name="email" required email class="form-control text-end"
                     dir="rtl" id="email" #emailControl="ngModel">
-                  <label for="email">ادخل البريد الالكتروني</label>
 
                   @if (emailControl.invalid && (emailControl.touched || emailControl.dirty)) {
                   <div class="text-danger small mt-1 text-end">
@@ -45,7 +45,8 @@
                   <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" required
                     minlength="6" class="form-control text-end" dir="rtl" id="password" #passwordControl="ngModel">
                   <span class="password-toggle" (click)="togglePassword()">
-                    <i class="fa-regular {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}" style="color: var(--main-color);"></i>
+                    <i class="fa-regular {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}"
+                      style="color: var(--main-color);"></i>
                   </span>
                   <label for="password">ادخل كلمة المرور</label>
                   @if (passwordControl.invalid && (passwordControl.touched || passwordControl.dirty)) {

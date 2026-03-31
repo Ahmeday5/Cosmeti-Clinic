@@ -51,19 +51,14 @@ export class AuthService {
 
     try {
       const raw = await firstValueFrom(
-        this.http
-          .post<RawAuthResponse>(
-            `${this.loginUrl}`,
-            payload,
-          )
-          .pipe(
-            catchError((err) => {
-              if (err.status === 401)
-                throw new Error('البريد أو كلمة المرور غير صحيحة');
-              if (err.status === 400) throw new Error('بيانات غير صحيحة');
-              throw new Error('فشل تسجيل الدخول');
-            }),
-          ),
+        this.http.post<RawAuthResponse>(`${this.loginUrl}`, payload).pipe(
+          catchError((err) => {
+            if (err.status === 401)
+              throw new Error('البريد أو كلمة المرور غير صحيحة');
+            if (err.status === 400) throw new Error('بيانات غير صحيحة');
+            throw new Error('فشل تسجيل الدخول');
+          }),
+        ),
       );
 
       const user = this.makeStoredUserFromRaw(raw);
@@ -89,10 +84,7 @@ export class AuthService {
 
     try {
       const raw = await firstValueFrom(
-        this.http.post<RawAuthResponse>(
-          `${this.refreshUrl}`,
-          { refreshToken },
-        ),
+        this.http.post<RawAuthResponse>(`${this.refreshUrl}`, { refreshToken }),
       );
 
       const newUser = this.makeStoredUserFromRaw({

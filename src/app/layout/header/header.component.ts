@@ -1,17 +1,8 @@
 import { SidebarService } from '../../core/services/sidebar.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  Router,
-  RouterModule,
-} from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { filter, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { UserData } from '../../features/auth/models/login.model';
-//import { UserData } from '../../core/types/login.type';
 
 @Component({
   selector: 'app-header',
@@ -26,8 +17,7 @@ export class HeaderComponent {
     private authService: AuthService, // حقن AuthService لتسجيل الخروج
     private router: Router, // حقن Router للتعامل مع التنقل
     private activatedRoute: ActivatedRoute, // حقن ActivatedRoute للوصول للروت الحالي
-  ) {
-  }
+  ) {}
 
   toggleSidebar() {
     this.sidebarService.toggle();
