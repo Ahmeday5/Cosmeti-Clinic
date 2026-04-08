@@ -1,0 +1,209 @@
+<div class="students-page" dir="rtl">
+  <div class="container-fluid py-4">
+
+    <!-- ================= Page Header ================= -->
+    <div class="page-header d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h2 class="page-title mb-1">إدارة الطلاب</h2>
+        <p class="page-subtitle mb-0">عرض وتصفية جميع الطلاب المسجلين في النظام</p>
+      </div>
+      <div class="total-badge">
+        <i class="fas fa-user-graduate me-1"></i>
+        <span>{{ totalCount }} طالب</span>
+      </div>
+    </div>
+
+    <!-- ================= Alerts ================= -->
+    @if(errorMessage) {
+    <div class="alert-custom alert-custom--danger d-flex align-items-center gap-2 mb-4">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+    }
+    @if(activationSuccess) {
+    <div class="alert-custom alert-custom--success d-flex align-items-center gap-2 mb-4">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ activationSuccess }}</span>
+    </div>
+    }
+    @if(activationError) {
+    <div class="alert-custom alert-custom--danger d-flex align-items-center gap-2 mb-4">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ activationError }}</span>
+    </div>
+    }
+
+    <!-- ================= Filters Bar ================= -->
+    <div class="filters-bar mb-4">
+      <!-- Search -->
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="ابحث بالاسم..."
+          (input)="onSearch($event)"
+        />
+      </div>
+
+      <!-- Country Filter -->
+      <div class="select-wrapper">
+        <i class="fas fa-globe-africa select-icon"></i>
+        <select class="country-select" (change)="onCountryChange($event)">
+          <option value="">كل الدول</option>
+          @for(country of countries; track country.id) {
+          <option [value]="country.id">{{ country.name }}</option>
+          }
+        </select>
+        <i class="fas fa-chevron-down select-chevron"></i>
+      </div>
+    </div>
+
+    <!-- ================= Table Card ================= -->
+    <div class="table-card">
+
+      <!-- Card Header -->
+      <div class="table-card__header d-flex align-items-center justify-content-between px-4 py-3">
+        <h5 class="mb-0 fw-bold">قائمة الطلاب</h5>
+        @if(hasLoaded && !isLoading) {
+        <span class="records-info">
+          عرض {{ startItem }} – {{ endItem }} من {{ totalCount }}
+        </span>
+        }
+      </div>
+
+      <!-- Loading State -->
+      @if(isLoading) {
+      <div class="loading-state d-flex flex-column align-items-center justify-content-center py-5">
+        <div class="spinner-ring"></div>
+        <p class="mt-3 text-muted fw-500">جاري تحميل البيانات...</p>
+      </div>
+      }
+
+      <!-- Table -->
+      @else if(students.length > 0) {
+      <div class="table-responsive">
+        <table class="table custom-table text-center mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>الاسم</th>
+              <th>البريد الإلكتروني</th>
+              <th>الهاتف</th>
+              <th>الواتساب</th>
+              <th>الدولة</th>
+              <th>المحافظة</th>
+              <th>السن</th>
+              <th>الكلية</th>
+              <th>التخصص</th>
+              <th>الحالة</th>
+              <th>تاريخ التسجيل</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(student of students; track trackByStudentId($index, student); let i = $index) {
+            <tr>
+              <!-- Row Number -->
+              <td>
+                <span class="row-number">{{ startItem + i }}</span>
+              </td>
+
+              <!-- Name -->
+              <td>
+                <div class="student-name-cell">
+                  <span class="fw-600">{{ student.name }}</span>
+                </div>
+              </td>
+
+              <!-- Email -->
+              <td>
+                <span class="email-text">{{ student.email }}</span>
+              </td>
+
+              <!-- Phone -->
+              <td>
+                <span class="phone-text" dir="ltr">{{ student.phoneNumber }}</span>
+              </td>
+
+              <!-- Whatsapp -->
+              <td>
+                <span class="phone-text" dir="ltr">{{ student.whatsappPhoneNumber }}</span>
+              </td>
+
+              <!-- Country -->
+              <td>
+                <span class="country-badge">
+                  <i class="fas fa-map-marker-alt me-1"></i>{{ student.countryName }}
+                </span>
+              </td>
+
+              <!-- Governorate -->
+              <td>
+                <span class="text-secondary-custom">{{ student.governorate }}</span>
+              </td>
+
+              <!-- Age -->
+              <td>
+                <span class="age-text">{{ student.age }}</span>
+              </td>
+
+              <!-- collegeName -->
+              <td>
+                <span class="collegeName-text">{{ student.collegeName }}</span>
+              </td>
+              <!-- Age -->
+              <td>
+                <span class="specification-text">{{ student.specification }}</span>
+              </td>
+
+              <!-- Status Toggle -->
+              <td>
+                <button
+                  class="status-toggle"
+                  [class.status-toggle--active]="student.isActive"
+                  [class.status-toggle--inactive]="!student.isActive"
+                  [disabled]="activatingId === student.id"
+                  (click)="toggleActivation(student)"
+                  [title]="student.isActive ? 'اضغط لإيقاف النشاط' : 'اضغط للتفعيل'"
+                >
+                  @if(activatingId === student.id) {
+                  <span class="mini-spinner"></span>
+                  } @else {
+                  <i [class]="student.isActive ? 'fas fa-toggle-on' : 'fas fa-toggle-off'"></i>
+                  }
+                  <span>{{ student.isActive ? 'نشط' : 'غير نشط' }}</span>
+                </button>
+              </td>
+
+              <!-- Date -->
+              <td>
+                <span class="date-text">{{ formatDate(student.createdAt) }}</span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ================= Pagination ================= -->
+      <app-pagination
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        (pageChange)="onPageChange($event)"
+      />
+      }
+
+      <!-- Empty State -->
+      @else if(hasLoaded) {
+      <div class="empty-state d-flex flex-column align-items-center justify-content-center py-5">
+        <div class="empty-icon">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+        <h5 class="fw-bold mt-3 mb-1">لا يوجد طلاب</h5>
+        <p class="text-muted mb-0">لم يتم العثور على نتائج تطابق معايير البحث</p>
+      </div>
+      }
+
+    </div>
+  </div>
+</div>

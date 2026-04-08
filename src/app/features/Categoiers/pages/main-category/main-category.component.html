@@ -136,7 +136,7 @@
               <!-- ================= Sort Order ================= -->
               <div class="mb-3">
                 <label class="form-label">رقم ترتيب العرض</label>
-                <input type="number" class="form-control" formControlName="sortOrder" [readonly]="categoryId" />
+                <input type="number" class="form-control" formControlName="sortOrder" />
                 @if(form.get('sortOrder')?.invalid && form.get('sortOrder')?.touched){
                 <small class="text-danger">
                   رقم ترتيب العرض مطلوب

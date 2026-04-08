@@ -274,6 +274,26 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
           },
         ],
       },
+      {
+        items: [
+          {
+            label: 'المستخدمين',
+            path: 'app-users',
+            icons: 'fas fa-users',
+            isOpen: false,
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            label: 'الطلاب',
+            path: 'students',
+            icons: 'fas fa-user-graduate',
+            isOpen: false,
+          },
+        ],
+      },
     ];
   }
 }

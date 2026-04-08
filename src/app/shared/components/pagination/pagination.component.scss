@@ -1,0 +1,114 @@
+.pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(143, 199, 69, 0.15);
+  background: rgba(143, 199, 69, 0.02);
+
+  // ====================== Page Info ======================
+  .page-info {
+    font-size: 0.83rem;
+    color: #888;
+    font-weight: 500;
+
+    strong {
+      color: var(--main-color);
+      font-weight: 700;
+    }
+  }
+
+  // ====================== Controls ======================
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  // ====================== Page Button ======================
+  .pg-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(143, 199, 69, 0.25);
+    border-radius: 10px;
+    background: #fff;
+    color: #555;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+    outline: none;
+
+    &:hover:not(:disabled):not(.pg-btn--disabled):not(.pg-btn--active) {
+      border-color: var(--main-color);
+      color: var(--main-color);
+      background: rgba(143, 199, 69, 0.08);
+      transform: translateY(-1px);
+    }
+
+    // Active page
+    &--active {
+      background: var(--main-color);
+      border-color: var(--main-color);
+      color: #fff !important;
+      box-shadow: 0 4px 12px rgba(143, 199, 69, 0.4);
+      transform: translateY(-1px);
+      cursor: default;
+    }
+
+    // Nav buttons (prev/next/first/last)
+    &--nav {
+      color: var(--main-color);
+
+      i {
+        font-size: 0.75rem;
+      }
+    }
+
+    // Disabled state
+    &--disabled,
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none !important;
+      pointer-events: none;
+    }
+  }
+
+  // ====================== Ellipsis ======================
+  .pg-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: #bbb;
+    font-size: 0.75rem;
+    pointer-events: none;
+    user-select: none;
+  }
+}
+
+// ====================== Responsive ======================
+@media (max-width: 576px) {
+  .pagination-wrapper {
+    justify-content: center;
+
+    .page-info {
+      width: 100%;
+      text-align: center;
+    }
+
+    .pagination-controls {
+      justify-content: center;
+    }
+  }
+}

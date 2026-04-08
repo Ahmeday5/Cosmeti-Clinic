@@ -29,10 +29,7 @@
       </div>
 
       <!-- Video -->
-      <a *ngSwitchCase="'VideoList'"
-         [href]="product.data?.value"
-         target="_blank"
-         class="video-link">
+      <a *ngSwitchCase="'VideoList'" [href]="product.data?.value" target="_blank" class="video-link">
         ▶ مشاهدة الفيديو
       </a>
 
@@ -55,6 +52,16 @@
       <button class="btn delete" (click)="delete.emit(product.id)">
         <i class="fas fa-trash"></i>
       </button>
+
+      @if(!isSubBlock){
+      <button class="btn add" (click)="addSub.emit(product.id)">
+        <i class="fas fa-plus"></i>
+      </button>
+
+      <button class="btn view" (click)="viewSub.emit(product)">
+        <i class="fas fa-eye"></i>
+      </button>
+      }
     </div>
 
   </div>

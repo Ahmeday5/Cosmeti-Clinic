@@ -1,0 +1,228 @@
+<div class="app-user" dir="rtl">
+  <div class="container-fluid py-4">
+
+    <!-- ================= Page Header ================= -->
+    <div class="page-header d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h2 class="page-title mb-1">إدارة المستخدمين</h2>
+        <p class="page-subtitle mb-0">عرض وإدارة جميع مستخدمي النظام</p>
+      </div>
+      <button class="btn btn-addSection fw-bold d-flex align-items-center gap-2" (click)="openAddModal()">
+        <i class="fas fa-user-plus"></i>
+        <span>إضافة مستخدم</span>
+      </button>
+    </div>
+
+    <!-- ================= Alerts ================= -->
+    @if(successMessage){
+    <div class="alert-custom alert-custom--success d-flex align-items-center gap-2 mb-4">
+      <i class="fas fa-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+    }
+    @if(errorMessage){
+    <div class="alert-custom alert-custom--danger d-flex align-items-center gap-2 mb-4">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+    }
+
+    <!-- ================= Table Card ================= -->
+    <div class="table-card custom-table">
+      <div class="table-card__header d-flex align-items-center justify-content-between px-4 py-3">
+        <h5 class="mb-0 fw-bold">قائمة المستخدمين</h5>
+        <span class="users-count-badge">{{ users.length }} مستخدم</span>
+      </div>
+
+      @if(!hasLoaded) {
+      <!-- global loader -->
+      } @else if(users.length > 0) {
+      <div class="table-responsive">
+        <table class="table custom-table-design text-center mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>المستخدم</th>
+              <th>البريد الإلكتروني</th>
+              <th>رقم الهاتف</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(user of users; track user.id; let i = $index){
+            <tr>
+              <td>
+                <span class="row-number">{{ i + 1 }}</span>
+              </td>
+              <td>
+                <div class="user-cell">
+                  <span class="fw-600">{{ user.userName }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="email-text">{{ user.email }}</span>
+              </td>
+              <td>
+                @if(user.phoneNumber){
+                <span class="phone-text">{{ user.phoneNumber }}</span>
+                } @else {
+                <span class="text-muted">—</span>
+                }
+              </td>
+              <td>
+                <div class="action-btns d-flex align-items-center justify-content-center gap-2">
+                  <button class="action-btn action-btn--edit" (click)="openEditModal(user.id)" title="تعديل">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-btn action-btn--delete" (click)="deleteUser(user.id)" title="حذف">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      } @else {
+      <div class="empty-state d-flex flex-column align-items-center justify-content-center py-5">
+        <div class="empty-icon mb-3">
+          <i class="fas fa-users-slash"></i>
+        </div>
+        <h5 class="fw-bold mb-1">لا يوجد مستخدمون</h5>
+        <p class="text-muted mb-3">ابدأ بإضافة أول مستخدم للنظام</p>
+        <button class="btn btn-addSection fw-bold" (click)="openAddModal()">
+          <i class="fas fa-user-plus me-2"></i> إضافة مستخدم
+        </button>
+      </div>
+      }
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= Modal Add / Edit ================= -->
+<div class="modal fade" id="appUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header-custom d-flex align-items-center justify-content-between px-4 py-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="modal-header-icon">
+            <i [class]="isEditMode ? 'fas fa-user-edit' : 'fas fa-user-plus'"></i>
+          </div>
+          <div>
+            <h5 class="modal-title-text mb-0 fw-bold">
+              {{ isEditMode ? 'تعديل بيانات المستخدم' : 'إضافة مستخدم جديد' }}
+            </h5>
+            <small class="text-muted">
+              {{ isEditMode ? 'قم بتحديث بيانات المستخدم' : 'أدخل بيانات المستخدم الجديد' }}
+            </small>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" (click)="modalInstance.hide()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      @if(errorMessageModel){
+      <div class="alert-custom alert-custom--danger mx-4 mt-3 d-flex align-items-center gap-2">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ errorMessageModel }}</span>
+      </div>
+      }
+
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="modal-body px-4 py-3">
+
+          <!-- userName -->
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-user label-icon me-1"></i> اسم المستخدم
+            </label>
+            <input type="text" class="form-control" formControlName="userName" placeholder="أدخل اسم المستخدم">
+            @if(form.get('userName')?.invalid && form.get('userName')?.touched){
+            <small class="error-hint">
+              <i class="fas fa-exclamation-triangle me-1"></i>اسم المستخدم مطلوب (3 أحرف على الأقل)
+            </small>
+            }
+          </div>
+
+          <!-- email -->
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-envelope label-icon me-1"></i> البريد الإلكتروني
+            </label>
+            <input type="email" class="form-control" formControlName="email" placeholder="example@domain.com">
+            @if(form.get('email')?.invalid && form.get('email')?.touched){
+            <small class="error-hint">
+              <i class="fas fa-exclamation-triangle me-1"></i>بريد إلكتروني صحيح مطلوب
+            </small>
+            }
+          </div>
+
+          <!-- password -->
+          <div class="mb-3">
+            <label class="form-label d-flex align-items-center gap-2">
+              <i class="fas fa-lock label-icon"></i>
+              <span>كلمة المرور</span>
+              @if(isEditMode){
+              <span class="optional-tag">اختياري</span>
+              }
+            </label>
+            <input type="password" class="form-control" formControlName="password"
+              [placeholder]="isEditMode ? 'اتركها فارغة إن لم تريد تغييرها' : 'أدخل كلمة المرور'">
+            @if(form.get('password')?.invalid && form.get('password')?.touched){
+            <small class="error-hint">
+              <i class="fas fa-exclamation-triangle me-1"></i>كلمة المرور مطلوبة (6 أحرف على الأقل)
+            </small>
+            }
+          </div>
+
+          <!-- phoneNumber -->
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-phone label-icon me-1"></i> رقم الهاتف
+            </label>
+            <input type="text" class="form-control" formControlName="phoneNumber" placeholder="01xxxxxxxxx">
+            @if(form.get('phoneNumber')?.invalid && form.get('phoneNumber')?.touched){
+            <small class="error-hint">
+              <i class="fas fa-exclamation-triangle me-1"></i>رقم الهاتف مطلوب
+            </small>
+            }
+          </div>
+
+          <!-- role -->
+          <div class="mb-1">
+            <label class="form-label">
+              <i class="fas fa-shield-alt label-icon me-1"></i> الصلاحية
+            </label>
+            <select formControlName="role" name="role" id="role" class="form-control">
+              <option value="Admin">Admin</option>
+            </select>
+            @if(form.get('role')?.invalid && form.get('role')?.touched){
+            <small class="error-hint">
+              <i class="fas fa-exclamation-triangle me-1"></i>الصلاحية مطلوبة
+            </small>
+            }
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer border-0 px-4 pb-4 gap-2">
+          <button type="button" class="btn btn-cancel" (click)="modalInstance.hide()">
+            <i class="fas fa-times me-1"></i> إلغاء
+          </button>
+          <button type="submit" class="btn btn-addModel d-flex align-items-center gap-2">
+            <i [class]="isEditMode ? 'fas fa-save' : 'fas fa-plus'"></i>
+            {{ isEditMode ? 'حفظ التعديل' : 'إضافة' }}
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

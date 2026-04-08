@@ -10,6 +10,9 @@ import { CommonModule } from '@angular/common';
 })
 export class ProductBlockComponent {
   @Input() product: any;
+  @Output() addSub = new EventEmitter<number>();
+  @Input() isSubBlock: boolean = false;
+  @Output() viewSub = new EventEmitter<any>();
 
   getBlockTypeLabel(type: string) {
     const map: any = {

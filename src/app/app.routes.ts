@@ -51,6 +51,20 @@ export const routes: Routes = [
             (m) => m.DASHBOARD_ROUTES,
           ),
       },
+      {
+        path: 'app-users',
+        loadChildren: () =>
+          import('./features/appUser/appUser.routes').then(
+            (m) => m.APP_USER_ROUTES,
+          ),
+      },
+      {
+        path: 'students',
+        loadChildren: () =>
+          import('./features/students/student.routes').then(
+            (m) => m.STUDENT_ROUTES,
+          ),
+      },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

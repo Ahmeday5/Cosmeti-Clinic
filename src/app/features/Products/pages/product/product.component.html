@@ -31,7 +31,8 @@
         @else if(Products.length > 0) {
         @for (product of Products; track product.id) {
         <div class="col-12">
-          <app-product-block [product]="product" (edit)="openEditModal($event)" (delete)="deleteProduct($event)">
+          <app-product-block [product]="product" (edit)="openEditModal($event)" (delete)="deleteProduct($event)"
+            (addSub)="openAddSubBlock($event)" (viewSub)="openSubBlocksModal($event)">
           </app-product-block>
         </div>
         }
@@ -98,7 +99,7 @@
                 </select>
                 @if(form.get('BlockType')?.invalid && form.get('BlockType')?.touched){
                 <small class="text-danger">
-                  النوع مطلوب (3 أحرف على الأقل)
+                  النوع مطلوب
                 </small>
                 }
               </div>
@@ -107,13 +108,8 @@
 
               @if(selectedBlockType){
               <div class="mb-3">
-                <label class="form-label">الاسم</label>
+                <label class="form-label">العنوان</label>
                 <input type="text" class="form-control" formControlName="title">
-                @if(form.get('title')?.invalid && form.get('title')?.touched){
-                <small class="text-danger">
-                  الاسم مطلوب (3 أحرف على الأقل)
-                </small>
-                }
               </div>
               }
 
@@ -124,17 +120,12 @@
               <div class="mb-3">
                 <label class="form-label">{{dataLabel}}</label>
                 <input type="text" class="form-control" formControlName="DataJson" [placeholder]="dataLabel">
-                @if(form.get('DataJson')?.invalid && form.get('DataJson')?.touched){
-                <small class="text-danger">
-                  الاسم مطلوب (3 أحرف على الأقل)
-                </small>
-                }
               </div>
               }
               <!-- ================= Sort Order ================= -->
               <div class="mb-3">
                 <label class="form-label">رقم ترتيب العرض</label>
-                <input type="number" class="form-control" formControlName="sortOrder" [readonly]="headContentId" />
+                <input type="number" class="form-control" formControlName="sortOrder" />
                 @if(form.get('sortOrder')?.invalid && form.get('sortOrder')?.touched){
                 <small class="text-danger">
                   رقم ترتيب العرض مطلوب
@@ -171,6 +162,31 @@
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="subBlocksModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5>الـ Sub Blocks</h5>
+          </div>
+
+          <div class="modal-body">
+
+            @if(selectedBlock && selectedBlock.childBlocks && selectedBlock.childBlocks.length > 0){
+            @for(sub of selectedBlock.childBlocks; track sub.id){
+            <app-product-block [product]="sub" (edit)="openEditModal($event)" (delete)="deleteProduct($event)">
+            </app-product-block>
+            }
+            } @else {
+            <p>لا يوجد بيانات</p>
+            }
+
+          </div>
+
         </div>
       </div>
     </div>

@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   FormBuilder,
@@ -53,6 +59,8 @@ export class ProductComponent implements OnInit, AfterViewInit {
   public modalInstance: any;
 
   hasLoaded = false;
+  selectedBlock: Product | null = null;
+  modalInstanceSub: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -63,8 +71,9 @@ export class ProductComponent implements OnInit, AfterViewInit {
   ) {
     this.form = this.fb.group({
       headContentId: [null, Validators.required],
+      parentBlockId: [null],
       BlockType: [null, Validators.required],
-      title: ['', Validators.required],
+      title: [''],
       sortOrder: ['', Validators.required],
       DataJson: [''],
     });
@@ -92,9 +101,13 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const modal = document.getElementById('subCategoryModal');
-
     if (modal) {
       this.modalInstance = new (window as any).bootstrap.Modal(modal);
+    }
+
+    const subModal = document.getElementById('subBlocksModal');
+    if (subModal) {
+      this.modalInstanceSub = new (window as any).bootstrap.Modal(subModal);
     }
   }
 
@@ -194,20 +207,49 @@ export class ProductComponent implements OnInit, AfterViewInit {
     this.modalInstance.show();
   }
 
+  openAddSubBlock(parentId: number) {
+    this.isEditMode = false;
+    this.form.reset();
+
+    this.selectedFile = null;
+    this.imagePreview = null;
+
+    this.form.patchValue({
+      headContentId: this.headContentId,
+      parentBlockId: parentId, // 👈 المهم
+    });
+
+    this.service.getNextSortOrder(this.headContentId).subscribe({
+      next: (res) => {
+        this.form.patchValue({
+          sortOrder: res.nextSortOrder,
+        });
+      },
+    });
+
+    this.modalInstance.show();
+  }
+
   // ======================
   // EDIT MODAL
   // ======================
 
   openEditModal(id: number) {
+    // 👇 لو فاتح sub modal اقفله الأول
+    if (this.modalInstanceSub) {
+      this.modalInstanceSub.hide();
+    }
+
     this.isEditMode = true;
     this.editingId = id;
 
-    // get by id
     this.service.getById(id).subscribe({
       next: (data) => {
         this.selectedBlockType = data.type;
+
         this.form.patchValue({
           headContentId: data.headContentId,
+          parentBlockId: data.parentBlockId,
           title: data.title,
           sortOrder: data.sortOrder,
           BlockType: data.type,
@@ -215,9 +257,18 @@ export class ProductComponent implements OnInit, AfterViewInit {
         });
 
         this.imagePreview = data.imageUrl;
-        this.modalInstance.show();
+
+        // 👇 افتح بعد ما الأول يتقفل
+        setTimeout(() => {
+          this.modalInstance.show();
+        }, 200);
       },
     });
+  }
+
+  openSubBlocksModal(block: Product) {
+    this.selectedBlock = block;
+    this.modalInstanceSub.show();
   }
 
   onCategoryChange(event: any) {
@@ -269,7 +320,12 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
     const formData = new FormData();
     formData.append('HeadContentId', this.form.get('headContentId')?.value);
-    formData.append('Title', this.form.get('title')?.value);
+    const parentId = this.form.get('parentBlockId')?.value;
+    if (parentId) {
+      formData.append('ParentBlockId', parentId);
+    }
+    const titleValue = this.form.get('title')?.value;
+    formData.append('Title', titleValue ? titleValue : '');
     formData.append('SortOrder', this.form.get('sortOrder')?.value);
     formData.append('BlockType', this.form.get('BlockType')?.value);
 

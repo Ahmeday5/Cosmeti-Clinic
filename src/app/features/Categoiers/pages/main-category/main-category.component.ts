@@ -10,7 +10,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Category } from '../../../dashboard/models/dashboard.model';
-import { SubCategoryService } from '../../services/sub-category.service';
 import { DashboardService } from '../../../dashboard/services/dashboard.service';
 
 @Component({

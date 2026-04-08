@@ -1,1 +1,75 @@
-<p>pagination works!</p>
+@if(totalPages > 1) {
+<div class="pagination-wrapper" dir="ltr">
+
+  <!-- Page Info -->
+  <span class="page-info" dir="rtl">
+    الصفحة <strong>{{ currentPage }}</strong> من <strong>{{ totalPages }}</strong>
+  </span>
+
+  <!-- Controls -->
+  <div class="pagination-controls">
+
+    <!-- First -->
+    <button
+      class="pg-btn pg-btn--nav"
+      [class.pg-btn--disabled]="currentPage === 1"
+      [disabled]="currentPage === 1"
+      (click)="go(1)"
+      title="الصفحة الأولى"
+    >
+      <i class="fas fa-angles-right"></i>
+    </button>
+
+    <!-- Prev -->
+    <button
+      class="pg-btn pg-btn--nav"
+      [class.pg-btn--disabled]="currentPage === 1"
+      [disabled]="currentPage === 1"
+      (click)="go(currentPage - 1)"
+      title="السابق"
+    >
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Page Numbers -->
+    @for(item of pages; track $index) {
+      @if(item.type === 'page') {
+      <button
+        class="pg-btn"
+        [class.pg-btn--active]="item.value === currentPage"
+        (click)="go(item.value)"
+      >
+        {{ item.value }}
+      </button>
+      } @else {
+      <span class="pg-ellipsis">
+        <i class="fas fa-ellipsis-h"></i>
+      </span>
+      }
+    }
+
+    <!-- Next -->
+    <button
+      class="pg-btn pg-btn--nav"
+      [class.pg-btn--disabled]="currentPage === totalPages"
+      [disabled]="currentPage === totalPages"
+      (click)="go(currentPage + 1)"
+      title="التالي"
+    >
+      <i class="fas fa-chevron-left"></i>
+    </button>
+
+    <!-- Last -->
+    <button
+      class="pg-btn pg-btn--nav"
+      [class.pg-btn--disabled]="currentPage === totalPages"
+      [disabled]="currentPage === totalPages"
+      (click)="go(totalPages)"
+      title="الصفحة الأخيرة"
+    >
+      <i class="fas fa-angles-left"></i>
+    </button>
+
+  </div>
+</div>
+}
