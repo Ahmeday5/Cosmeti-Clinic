@@ -43,7 +43,11 @@
             </button>
           </div>
           <div class="icon-wrapper mb-3">
+            @if(head.imageUrl) {
             <img [src]="head.imageUrl" [alt]="head.title" class="img-fluid rounded" style="width: 100%; height: 100%;">
+            }@else {
+            <img src="" alt="">
+            }
           </div>
           <h4 class="card-title fw-600 mb-2">
             {{ head.title }}
@@ -128,7 +132,6 @@
                 </small>
                 }
               </div>
-
               <!-- ================= Image Upload ================= -->
 
               <div class="mb-3">

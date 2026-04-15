@@ -12,14 +12,14 @@ export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
 
   constructor() {}
-
+  
   // ====================== GET ======================
   get<T>(endpoint: string): Observable<T> {
     return this.http
       .get<T>(`${this.baseUrl}${endpoint}`)
       .pipe(catchError(this.handleError));
   }
-
+  
   // ====================== POST (يدعم FormData + JSON) ======================
   post<T>(endpoint: string, body: any): Observable<T> {
     return this.http

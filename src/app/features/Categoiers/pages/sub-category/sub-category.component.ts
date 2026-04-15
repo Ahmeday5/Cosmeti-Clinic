@@ -237,11 +237,6 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (!this.selectedFile && !this.isEditMode) {
-      this.showErrorModel('يرجي رفع صورة محتوي صالحة');
-      return; // مهم جدا عشان يمنع ارسال الداتا
-    }
-
     const formData = new FormData();
     formData.append('SubCategoryId', this.form.get('SubCategoryId')?.value);
     formData.append('Title', this.form.get('title')?.value);
@@ -282,7 +277,7 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
       },
     });
   }
-
+  
   // ======================
   // DELETE
   // ======================

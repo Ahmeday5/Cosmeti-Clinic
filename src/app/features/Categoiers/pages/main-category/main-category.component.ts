@@ -235,11 +235,6 @@ export class MainCategoryComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (!this.selectedFile && !this.isEditMode) {
-      this.showErrorModel('يرجي رفع صورة قسم صالحة');
-      return; // مهم جدا عشان يمنع ارسال الداتا
-    }
-
     const formData = new FormData();
     formData.append('CategoryId', this.form.get('categoryId')?.value);
     formData.append('Title', this.form.get('title')?.value);
