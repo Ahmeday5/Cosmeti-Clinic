@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
-  EventEmitter,
   OnInit,
-  Output,
+  ViewChild,
+  ElementRef,
+  inject,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
@@ -18,6 +19,7 @@ import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import { SubCategoryService } from '../../../Categoiers/services/sub-category.service';
 import { ProductBlockComponent } from '../../../../shared/components/product-block/product-block.component';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-product',
@@ -38,10 +40,9 @@ export class ProductComponent implements OnInit, AfterViewInit {
   sorts: any;
   headContentName: string = '';
 
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
+  private readonly toast = inject(ToastService);
 
-  errorMessageModel: string | null = null;
+  @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
 
   headContentId!: number;
 
@@ -55,7 +56,6 @@ export class ProductComponent implements OnInit, AfterViewInit {
   selectedBlockType: string | null = null;
   dataLabel: string = '';
 
-  // modal
   public modalInstance: any;
 
   hasLoaded = false;
@@ -87,11 +87,8 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
       if (id) {
         this.headContentId = +id;
-        // جلب اسم المحتوي الراسي
         this.subService.getById(this.headContentId).subscribe({
-          next: (cat) => {
-            this.headContentName = cat.title;
-          },
+          next: (cat) => (this.headContentName = cat.title),
           error: (err) => console.error(err),
         });
         this.loadProduct(this.headContentId);
@@ -111,10 +108,6 @@ export class ProductComponent implements OnInit, AfterViewInit {
     }
   }
 
-  //============================
-  //blockType
-  //============================
-
   blockTypes = [
     { value: 'Text', label: 'نص' },
     { value: 'Image', label: 'صورة' },
@@ -125,17 +118,9 @@ export class ProductComponent implements OnInit, AfterViewInit {
   onBlockTypeChange() {
     this.selectedBlockType = this.form.get('BlockType')?.value;
 
-    if (this.selectedBlockType === 'Text') {
-      this.dataLabel = 'الوصف';
-    }
-
-    if (this.selectedBlockType === 'VideoList') {
-      this.dataLabel = 'لينك الفيديو';
-    }
-
-    if (this.selectedBlockType === 'ListItems') {
-      this.dataLabel = 'الوصف';
-    }
+    if (this.selectedBlockType === 'Text') this.dataLabel = 'الوصف';
+    if (this.selectedBlockType === 'VideoList') this.dataLabel = 'لينك الفيديو';
+    if (this.selectedBlockType === 'ListItems') this.dataLabel = 'الوصف';
   }
 
   getBlockTypeLabel(type: string) {
@@ -143,19 +128,11 @@ export class ProductComponent implements OnInit, AfterViewInit {
     return found ? found.label : type;
   }
 
-  // =========================
-  // تحميل HeadContent
-  // =========================
-
   loadHeadContent() {
     this.subService.getAll().subscribe({
       next: (data) => (this.headcontents = data),
     });
   }
-
-  // ======================
-  // LOAD BY CATEGORY
-  // ======================
 
   loadProduct(id: number) {
     this.service.getByHeadContentId(id).subscribe({
@@ -163,45 +140,33 @@ export class ProductComponent implements OnInit, AfterViewInit {
         this.Products = data;
         this.hasLoaded = true;
       },
-
       error: (err) => {
-        this.errorMessage = err.message;
+        this.toast.error(err.message);
         this.hasLoaded = true;
       },
     });
   }
 
-  // ======================
-  // ADD MODAL
-  // ======================
   openAddModal() {
     this.isEditMode = false;
     this.form.reset();
-
     this.selectedFile = null;
     this.imagePreview = null;
+    this.fileInputRef.nativeElement.value = '';
 
-    // لو الصفحة مفتوحة بكاتجوري
     if (this.headContentId) {
       this.service.getNextSortOrder(this.headContentId).subscribe({
         next: (res) => {
           this.sorts = res.nextSortOrder;
-
           this.form.patchValue({
             sortOrder: res.nextSortOrder,
             headContentId: this.headContentId,
           });
         },
-        error: () => {
-          this.errorMessage = 'فشل الحصول على ترتيب العرض';
-        },
+        error: () => this.toast.error('فشل الحصول على ترتيب العرض'),
       });
     } else {
-      // المستخدم لازم يختار الكاتجوري
-      this.form.patchValue({
-        sortOrder: null,
-        headContentId: null,
-      });
+      this.form.patchValue({ sortOrder: null, headContentId: null });
     }
 
     this.modalInstance.show();
@@ -210,32 +175,23 @@ export class ProductComponent implements OnInit, AfterViewInit {
   openAddSubBlock(parentId: number) {
     this.isEditMode = false;
     this.form.reset();
-
     this.selectedFile = null;
     this.imagePreview = null;
+    this.fileInputRef.nativeElement.value = '';
 
     this.form.patchValue({
       headContentId: this.headContentId,
-      parentBlockId: parentId, // 👈 المهم
+      parentBlockId: parentId,
     });
 
     this.service.getNextSortOrder(this.headContentId).subscribe({
-      next: (res) => {
-        this.form.patchValue({
-          sortOrder: res.nextSortOrder,
-        });
-      },
+      next: (res) => this.form.patchValue({ sortOrder: res.nextSortOrder }),
     });
 
     this.modalInstance.show();
   }
 
-  // ======================
-  // EDIT MODAL
-  // ======================
-
   openEditModal(id: number) {
-    // 👇 لو فاتح sub modal اقفله الأول
     if (this.modalInstanceSub) {
       this.modalInstanceSub.hide();
     }
@@ -258,10 +214,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
         this.imagePreview = data.imageUrl;
 
-        // 👇 افتح بعد ما الأول يتقفل
-        setTimeout(() => {
-          this.modalInstance.show();
-        }, 200);
+        setTimeout(() => this.modalInstance.show(), 200);
       },
     });
   }
@@ -275,32 +228,18 @@ export class ProductComponent implements OnInit, AfterViewInit {
     const headContentId = event.target.value;
     if (!headContentId) return;
     this.service.getNextSortOrder(headContentId).subscribe({
-      next: (res) => {
-        this.form.patchValue({
-          sortOrder: res.nextSortOrder,
-        });
-      },
-      error: () => {
-        this.errorMessageModel = 'فشل الحصول على ترتيب العرض';
-      },
+      next: (res) => this.form.patchValue({ sortOrder: res.nextSortOrder }),
+      error: () => this.toast.error('فشل الحصول على ترتيب العرض'),
     });
   }
-  // ======================
-  // FILE SELECT
-  // ======================
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-
     if (file) {
       this.selectedFile = file;
       this.imagePreview = URL.createObjectURL(file);
     }
   }
-
-  // ======================
-  // SUBMIT
-  // ======================
 
   onSubmit() {
     if (this.form.invalid) {
@@ -314,30 +253,21 @@ export class ProductComponent implements OnInit, AfterViewInit {
       !this.selectedFile &&
       !this.isEditMode
     ) {
-      this.showErrorModel('يرجي رفع صورة محتوي صالحة');
+      this.toast.error('يرجي رفع صورة محتوي صالحة');
       return;
     }
 
     const formData = new FormData();
     formData.append('HeadContentId', this.form.get('headContentId')?.value);
     const parentId = this.form.get('parentBlockId')?.value;
-    if (parentId) {
-      formData.append('ParentBlockId', parentId);
-    }
+    if (parentId) formData.append('ParentBlockId', parentId);
     const titleValue = this.form.get('title')?.value;
     formData.append('Title', titleValue ? titleValue : '');
     formData.append('SortOrder', this.form.get('sortOrder')?.value);
     formData.append('BlockType', this.form.get('BlockType')?.value);
 
-    //==========================dataJson====================
     const dataValue = this.form.get('DataJson')?.value;
-    let dataJson = {};
-    if (dataValue) {
-      dataJson = {
-        value: dataValue,
-      };
-    }
-    formData.append('DataJson', JSON.stringify(dataJson));
+    formData.append('DataJson', JSON.stringify(dataValue ? { value: dataValue } : {}));
 
     if (this.selectedFile) {
       formData.append('Image', this.selectedFile);
@@ -351,62 +281,34 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
     request$.subscribe({
       next: () => {
-        this.showSuccess(
-          this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
-        );
+        this.toast.success(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
         this.modalInstance.hide();
-        if (this.headContentId) {
-          this.loadProduct(this.headContentId);
-        }
+        if (this.headContentId) this.loadProduct(this.headContentId);
       },
       error: (err) => {
-        if (
-          err.error?.message === 'SortOrder already exists for this SubCategory'
-        ) {
-          this.showErrorModel('رقم ترتيب العرض مستخدم بالفعل، جرب رقم أكبر');
+        if (err.error?.message === 'SortOrder already exists for this SubCategory') {
+          this.toast.error('رقم ترتيب العرض مستخدم بالفعل، جرب رقم أكبر');
         } else {
-          this.errorMessageModel = err.message;
+          this.toast.error(err.message);
         }
       },
     });
   }
 
-  // ======================
-  // DELETE
-  // ======================
-
-  deleteProduct(id: number) {
-    if (!confirm('هل تريد الحذف؟')) return;
+  async deleteProduct(id: number) {
+    const confirmed = await this.toast.confirm('هل أنت متأكد من حذف هذا البلوك؟');
+    if (!confirmed) return;
 
     this.service.delete(id).subscribe({
       next: () => {
-        this.showSuccess('تم الحذف بنجاح');
-        if (this.headContentId) {
-          this.loadProduct(this.headContentId);
-        }
+        this.toast.success('تم الحذف بنجاح');
+        if (this.headContentId) this.loadProduct(this.headContentId);
       },
-      error: (err) => (this.errorMessage = err.message),
+      error: (err) => this.toast.error(err.message),
     });
   }
 
-  // ======================
-  // SUCCESS
-  // ======================
-
-  showSuccess(msg: string) {
-    this.successMessage = msg;
-    setTimeout(() => {
-      this.successMessage = null;
-    }, 3000);
-  }
-
-  private showErrorModel(msg: string): void {
-    this.errorMessageModel = msg;
-    setTimeout(() => (this.errorMessageModel = null), 5000);
-  }
-
-  // دالة لتنسيق التاريخ
   formatDate(date: string): string {
-    return date.split('T')[0]; // استخراج YYYY-MM-DD فقط
+    return date.split('T')[0];
   }
 }

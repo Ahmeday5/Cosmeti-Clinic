@@ -1,7 +1,7 @@
 <div class="students-page" dir="rtl">
   <div class="container-fluid py-4">
 
-    <!-- ================= Page Header ================= -->
+    <!-- ─── Page Header ──────────────────────────────────────────────────────── -->
     <div class="page-header d-flex align-items-center justify-content-between mb-4">
       <div>
         <h2 class="page-title mb-1">إدارة الطلاب</h2>
@@ -13,29 +13,8 @@
       </div>
     </div>
 
-    <!-- ================= Alerts ================= -->
-    @if(errorMessage) {
-    <div class="alert-custom alert-custom--danger d-flex align-items-center gap-2 mb-4">
-      <i class="fas fa-exclamation-circle"></i>
-      <span>{{ errorMessage }}</span>
-    </div>
-    }
-    @if(activationSuccess) {
-    <div class="alert-custom alert-custom--success d-flex align-items-center gap-2 mb-4">
-      <i class="fas fa-check-circle"></i>
-      <span>{{ activationSuccess }}</span>
-    </div>
-    }
-    @if(activationError) {
-    <div class="alert-custom alert-custom--danger d-flex align-items-center gap-2 mb-4">
-      <i class="fas fa-exclamation-circle"></i>
-      <span>{{ activationError }}</span>
-    </div>
-    }
-
-    <!-- ================= Filters Bar ================= -->
+    <!-- ─── Filters Bar ──────────────────────────────────────────────────────── -->
     <div class="filters-bar mb-4">
-      <!-- Search -->
       <div class="search-wrapper">
         <i class="fas fa-search search-icon"></i>
         <input
@@ -45,8 +24,6 @@
           (input)="onSearch($event)"
         />
       </div>
-
-      <!-- Country Filter -->
       <div class="select-wrapper">
         <i class="fas fa-globe-africa select-icon"></i>
         <select class="country-select" (change)="onCountryChange($event)">
@@ -59,20 +36,16 @@
       </div>
     </div>
 
-    <!-- ================= Table Card ================= -->
+    <!-- ─── Table Card ───────────────────────────────────────────────────────── -->
     <div class="table-card">
 
-      <!-- Card Header -->
       <div class="table-card__header d-flex align-items-center justify-content-between px-4 py-3">
         <h5 class="mb-0 fw-bold">قائمة الطلاب</h5>
         @if(hasLoaded && !isLoading) {
-        <span class="records-info">
-          عرض {{ startItem }} – {{ endItem }} من {{ totalCount }}
-        </span>
+        <span class="records-info">عرض {{ startItem }} – {{ endItem }} من {{ totalCount }}</span>
         }
       </div>
 
-      <!-- Loading State -->
       @if(isLoading) {
       <div class="loading-state d-flex flex-column align-items-center justify-content-center py-5">
         <div class="spinner-ring"></div>
@@ -80,7 +53,6 @@
       </div>
       }
 
-      <!-- Table -->
       @else if(students.length > 0) {
       <div class="table-responsive">
         <table class="table custom-table text-center mb-0">
@@ -90,73 +62,61 @@
               <th>الاسم</th>
               <th>البريد الإلكتروني</th>
               <th>الهاتف</th>
-              <th>الواتساب</th>
               <th>الدولة</th>
               <th>المحافظة</th>
               <th>السن</th>
               <th>الكلية</th>
               <th>التخصص</th>
+              <th>التخصصات المتاحة</th>
               <th>الحالة</th>
               <th>تاريخ التسجيل</th>
+              <th>إجراءات</th>
             </tr>
           </thead>
           <tbody>
             @for(student of students; track trackByStudentId($index, student); let i = $index) {
             <tr>
-              <!-- Row Number -->
-              <td>
-                <span class="row-number">{{ startItem + i }}</span>
-              </td>
+              <td><span class="row-number">{{ startItem + i }}</span></td>
 
-              <!-- Name -->
               <td>
                 <div class="student-name-cell">
+                  <div class="student-avatar">{{ student.name.charAt(0) }}</div>
                   <span class="fw-600">{{ student.name }}</span>
                 </div>
               </td>
 
-              <!-- Email -->
-              <td>
-                <span class="email-text">{{ student.email }}</span>
-              </td>
+              <td><span class="email-text">{{ student.email }}</span></td>
 
-              <!-- Phone -->
-              <td>
-                <span class="phone-text" dir="ltr">{{ student.phoneNumber }}</span>
-              </td>
+              <td><span class="phone-text" dir="ltr">{{ student.phoneNumber }}</span></td>
 
-              <!-- Whatsapp -->
-              <td>
-                <span class="phone-text" dir="ltr">{{ student.whatsappPhoneNumber }}</span>
-              </td>
-
-              <!-- Country -->
               <td>
                 <span class="country-badge">
                   <i class="fas fa-map-marker-alt me-1"></i>{{ student.countryName }}
                 </span>
               </td>
 
-              <!-- Governorate -->
+              <td><span class="text-secondary-custom">{{ student.governorate }}</span></td>
+
+              <td><span class="age-text">{{ student.age }}</span></td>
+
+              <td><span class="text-secondary-custom">{{ student.collegeName }}</span></td>
+
+              <td><span class="text-secondary-custom">{{ student.specification }}</span></td>
+
+              <!-- Category Types -->
               <td>
-                <span class="text-secondary-custom">{{ student.governorate }}</span>
+                <div class="types-cell">
+                  @if(student.categoryTypes.length > 0) {
+                    @for(type of student.categoryTypes; track type) {
+                    <span class="type-chip">{{ getArabicName(type) }}</span>
+                    }
+                  } @else {
+                  <span class="no-types">—</span>
+                  }
+                </div>
               </td>
 
-              <!-- Age -->
-              <td>
-                <span class="age-text">{{ student.age }}</span>
-              </td>
-
-              <!-- collegeName -->
-              <td>
-                <span class="collegeName-text">{{ student.collegeName }}</span>
-              </td>
-              <!-- Age -->
-              <td>
-                <span class="specification-text">{{ student.specification }}</span>
-              </td>
-
-              <!-- Status Toggle -->
+              <!-- Activation Toggle -->
               <td>
                 <button
                   class="status-toggle"
@@ -175,9 +135,17 @@
                 </button>
               </td>
 
-              <!-- Date -->
+              <td><span class="date-text">{{ formatDate(student.createdAt) }}</span></td>
+
+              <!-- Actions -->
               <td>
-                <span class="date-text">{{ formatDate(student.createdAt) }}</span>
+                <button
+                  class="btn-edit-types"
+                  (click)="openCategoryTypesModal(student)"
+                  title="تعديل التخصصات"
+                >
+                  <i class="fas fa-tags"></i>
+                </button>
               </td>
             </tr>
             }
@@ -185,7 +153,6 @@
         </table>
       </div>
 
-      <!-- ================= Pagination ================= -->
       <app-pagination
         [currentPage]="currentPage"
         [totalPages]="totalPages"
@@ -193,16 +160,88 @@
       />
       }
 
-      <!-- Empty State -->
       @else if(hasLoaded) {
       <div class="empty-state d-flex flex-column align-items-center justify-content-center py-5">
-        <div class="empty-icon">
-          <i class="fas fa-user-graduate"></i>
-        </div>
+        <div class="empty-icon"><i class="fas fa-user-graduate"></i></div>
         <h5 class="fw-bold mt-3 mb-1">لا يوجد طلاب</h5>
         <p class="text-muted mb-0">لم يتم العثور على نتائج تطابق معايير البحث</p>
       </div>
       }
+
+    </div>
+  </div>
+</div>
+
+<!-- ─── Category Types Modal ──────────────────────────────────────────────────── -->
+<div class="modal fade" id="categoryTypesModal" tabindex="-1" aria-hidden="true" dir="rtl">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content types-modal">
+
+      <div class="types-modal__header">
+        <div class="types-modal__icon">
+          <i class="fas fa-tags"></i>
+        </div>
+        <div>
+          <h5 class="types-modal__title">تعديل التخصصات المتاحة</h5>
+          @if(editingStudent) {
+          <p class="types-modal__subtitle">{{ editingStudent.name }}</p>
+          }
+        </div>
+        <button class="types-modal__close" (click)="closeCategoryTypesModal()" aria-label="إغلاق">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="types-modal__body">
+        <p class="types-hint">
+          <i class="fas fa-info-circle me-1"></i>
+          اختر التخصصات التي يحق للطالب الوصول إليها
+        </p>
+
+        <div class="types-grid">
+          @for(type of allCategoryTypes; track type.id) {
+          <label
+            class="type-option"
+            [class.type-option--selected]="isTypeSelected(type.name)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isTypeSelected(type.name)"
+              (change)="toggleType(type.name)"
+              class="type-checkbox"
+            />
+            <div class="type-option__content">
+              <div class="type-option__check">
+                <i class="fas fa-check"></i>
+              </div>
+              <span class="type-option__label">{{ type.arabicName }}</span>
+            </div>
+          </label>
+          }
+        </div>
+
+        <div class="selected-summary">
+          <i class="fas fa-check-double me-1"></i>
+          تم اختيار {{ selectedTypes.length }} من {{ allCategoryTypes.length }} تخصص
+        </div>
+      </div>
+
+      <div class="types-modal__footer">
+        <button class="btn-cancel-modal" (click)="closeCategoryTypesModal()">إلغاء</button>
+        <button
+          class="btn-save-types"
+          (click)="saveCategoryTypes()"
+          [disabled]="isSavingTypes"
+        >
+          @if(isSavingTypes) {
+          <span class="mini-spinner"></span>
+          <span>جاري الحفظ...</span>
+          } @else {
+          <i class="fas fa-save me-1"></i>
+          <span>حفظ التغييرات</span>
+          }
+        </button>
+      </div>
 
     </div>
   </div>

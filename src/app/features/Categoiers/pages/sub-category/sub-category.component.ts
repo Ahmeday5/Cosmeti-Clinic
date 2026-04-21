@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MainCategoryService } from '../../services/main-category.service';
 import { SubCategory } from '../../models/main-category.model';
@@ -13,6 +13,7 @@ import { Category } from '../../../dashboard/models/dashboard.model';
 import { SubCategoryService } from '../../services/sub-category.service';
 import { DashboardService } from '../../../dashboard/services/dashboard.service';
 import { headcontent } from '../../models/sub-category.model';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-sub-category',
@@ -27,14 +28,13 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
 
   sorts: any;
   subCategoryName: string = '';
+  hasLoaded = false;
 
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
+  private readonly toast = inject(ToastService);
 
-  errorMessageModel: string | null = null;
+  @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
 
   SubCategoryId!: number;
-   hasLoaded = false;
 
   form: FormGroup;
   isEditMode = false;
@@ -43,7 +43,6 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
   selectedFile: File | null = null;
   imagePreview: string | null = null;
 
-  // modal
   public modalInstance: any;
 
   constructor(
@@ -70,11 +69,8 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
 
       if (id) {
         this.SubCategoryId = +id;
-        // جلب اسم الكاتجوري
         this.mainService.getById(this.SubCategoryId).subscribe({
-          next: (cat) => {
-            this.subCategoryName = cat.title;
-          },
+          next: (cat) => (this.subCategoryName = cat.title),
           error: (err) => console.error(err),
         });
         this.loadHeadContent(this.SubCategoryId);
@@ -86,15 +82,10 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     const modal = document.getElementById('subCategoryModal');
-
     if (modal) {
       this.modalInstance = new (window as any).bootstrap.Modal(modal);
     }
   }
-
-  // =========================
-  // تحميل السب كاتجوري
-  // =========================
 
   loadSubCategories() {
     this.mainService.getAll().subscribe({
@@ -102,88 +93,61 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // ======================
-  // LOAD ALL
-  // ======================
-
   loadAll() {
     this.service.getAll().subscribe({
       next: (data) => {
         this.headcontents = data;
         this.hasLoaded = true;
       },
-
       error: (err) => {
-        this.errorMessage = err.message;
+        this.toast.error(err.message);
         this.hasLoaded = true;
       },
     });
   }
 
-  // ======================
-  // LOAD BY CATEGORY
-  // ======================
-
   loadHeadContent(id: number) {
-
     this.service.getBySubCategoryId(id).subscribe({
       next: (data) => {
         this.headcontents = data;
         this.hasLoaded = true;
       },
-
       error: (err) => {
-        this.errorMessage = err.message;
+        this.toast.error(err.message);
         this.hasLoaded = true;
       },
     });
   }
 
-  // ======================
-  // ADD MODAL
-  // ======================
   openAddModal() {
     this.isEditMode = false;
     this.form.reset();
-
     this.selectedFile = null;
     this.imagePreview = null;
+    this.fileInputRef.nativeElement.value = '';
 
-    // لو الصفحة مفتوحة بكاتجوري
     if (this.SubCategoryId) {
       this.service.getNextSortOrder(this.SubCategoryId).subscribe({
         next: (res) => {
           this.sorts = res.nextSortOrder;
-
           this.form.patchValue({
             sortOrder: res.nextSortOrder,
             SubCategoryId: this.SubCategoryId,
           });
         },
-        error: () => {
-          this.errorMessage = 'فشل الحصول على ترتيب العرض';
-        },
+        error: () => this.toast.error('فشل الحصول على ترتيب العرض'),
       });
     } else {
-      // المستخدم لازم يختار الكاتجوري
-      this.form.patchValue({
-        sortOrder: null,
-        SubCategoryId: null,
-      });
+      this.form.patchValue({ sortOrder: null, SubCategoryId: null });
     }
 
     this.modalInstance.show();
   }
 
-  // ======================
-  // EDIT MODAL
-  // ======================
-
   openEditModal(id: number) {
     this.isEditMode = true;
     this.editingId = id;
 
-    // get by id
     this.service.getById(id).subscribe({
       next: (data) => {
         this.form.patchValue({
@@ -193,7 +157,6 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
           IsPublished: true,
           LayoutType: 'Generic',
         });
-
         this.imagePreview = data.imageUrl;
         this.modalInstance.show();
       },
@@ -204,32 +167,18 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
     const SubCategoryId = event.target.value;
     if (!SubCategoryId) return;
     this.service.getNextSortOrder(SubCategoryId).subscribe({
-      next: (res) => {
-        this.form.patchValue({
-          sortOrder: res.nextSortOrder,
-        });
-      },
-      error: () => {
-        this.errorMessageModel = 'فشل الحصول على ترتيب العرض';
-      },
+      next: (res) => this.form.patchValue({ sortOrder: res.nextSortOrder }),
+      error: () => this.toast.error('فشل الحصول على ترتيب العرض'),
     });
   }
-  // ======================
-  // FILE SELECT
-  // ======================
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-
     if (file) {
       this.selectedFile = file;
       this.imagePreview = URL.createObjectURL(file);
     }
   }
-
-  // ======================
-  // SUBMIT
-  // ======================
 
   onSubmit() {
     if (this.form.invalid) {
@@ -256,9 +205,7 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
 
     request$.subscribe({
       next: () => {
-        this.showSuccess(
-          this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
-        );
+        this.toast.success(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
         this.modalInstance.hide();
         if (this.SubCategoryId) {
           this.loadHeadContent(this.SubCategoryId);
@@ -267,59 +214,37 @@ export class SubCategoryComponent implements OnInit, AfterViewInit {
         }
       },
       error: (err) => {
-        if (
-          err.error?.message === 'SortOrder already exists for this SubCategory'
-        ) {
-          this.showErrorModel('رقم ترتيب العرض مستخدم بالفعل، جرب رقم أكبر');
+        if (err.error?.message === 'SortOrder already exists for this SubCategory') {
+          this.toast.error('رقم ترتيب العرض مستخدم بالفعل، جرب رقم أكبر');
         } else {
-          this.errorMessageModel = err.message;
+          this.toast.error(err.message);
         }
       },
     });
   }
-  
-  // ======================
-  // DELETE
-  // ======================
 
-  deleteHead(id: number) {
-    if (!confirm('هل تريد الحذف؟')) return;
+  async deleteHead(id: number) {
+    const confirmed = await this.toast.confirm('هل أنت متأكد من حذف هذا المحتوى؟');
+    if (!confirmed) return;
 
     this.service.delete(id).subscribe({
       next: () => {
-        this.showSuccess('تم الحذف بنجاح');
+        this.toast.success('تم الحذف بنجاح');
         if (this.SubCategoryId) {
           this.loadHeadContent(this.SubCategoryId);
         } else {
           this.loadAll();
         }
       },
-      error: (err) => (this.errorMessage = err.message),
+      error: (err) => this.toast.error(err.message),
     });
-  }
-
-  // ======================
-  // SUCCESS
-  // ======================
-
-  showSuccess(msg: string) {
-    this.successMessage = msg;
-    setTimeout(() => {
-      this.successMessage = null;
-    }, 4000);
-  }
-
-  private showErrorModel(msg: string): void {
-    this.errorMessageModel = msg;
-    setTimeout(() => (this.errorMessageModel = null), 5000);
   }
 
   goToProducts(id: number) {
     this.router.navigate(['Products/product', id]);
   }
 
-  // دالة لتنسيق التاريخ
   formatDate(date: string): string {
-    return date.split('T')[0]; // استخراج YYYY-MM-DD فقط
+    return date.split('T')[0];
   }
 }

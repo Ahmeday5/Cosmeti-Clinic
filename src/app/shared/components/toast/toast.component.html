@@ -1,0 +1,44 @@
+<!-- ─── Toast Notifications ─────────────────────────────────────────────────── -->
+<div class="toast-wrapper" dir="rtl">
+  @for (toast of notifications; track trackById($index, toast)) {
+  <div class="toast-item {{ toast.type }}">
+    <div class="toast-icon">
+      <i [class]="iconClass(toast.type)"></i>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title">{{ toastTitle(toast.type) }}</div>
+      <p class="toast-message">{{ toast.message }}</p>
+    </div>
+    <button class="toast-close" (click)="remove(toast.id)" aria-label="إغلاق">
+      <i class="fas fa-times"></i>
+    </button>
+    @if (toast.duration && toast.duration > 0) {
+    <div class="toast-progress">
+      <div
+        class="toast-progress-bar"
+        [style.animation-duration]="toast.duration + 'ms'"
+      ></div>
+    </div>
+    }
+  </div>
+  }
+</div>
+
+<!-- ─── Confirm Modals ──────────────────────────────────────────────────────── -->
+@for (toast of confirms; track trackById($index, toast)) {
+<div class="confirm-overlay" (click)="toast.onCancel?.()">
+  <div class="confirm-box" (click)="$event.stopPropagation()">
+    <div class="confirm-icon-wrap">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h3 class="confirm-title">تأكيد العملية</h3>
+    <p class="confirm-message">{{ toast.message }}</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" (click)="toast.onCancel?.()">إلغاء</button>
+      <button class="btn-confirm" (click)="toast.onConfirm?.()">
+        <i class="fas fa-check me-1"></i> نعم، تأكيد
+      </button>
+    </div>
+  </div>
+</div>
+}

@@ -13,7 +13,7 @@ export class LoaderService {
 
   show() {
     this.loadingCount++;
-    this._loading.next(true);
+    Promise.resolve().then(() => this._loading.next(true));
   }
 
   hide() {

@@ -5,6 +5,7 @@ import {
   ElementRef,
   ViewChild,
   OnDestroy,
+  inject,
 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -17,8 +18,8 @@ import {
 } from 'rxjs';
 import { SidebarService } from '../../core/services/sidebar.service';
 import { AuthService } from '../../core/services/auth.service';
-import { HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../../core/services/api.service';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -38,6 +39,8 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchInput', { static: true })
   searchInputRef!: ElementRef<HTMLInputElement>;
 
+  private readonly toast = inject(ToastService);
+
   constructor(
     private router: Router,
     private sidebarService: SidebarService,
@@ -49,7 +52,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateMenuItems();
     this.updateSidebarState();
 
-    // استرجاع حالة الـ submenu
     this.menuItems.forEach((section) => {
       section.items?.forEach((item: any) => {
         if (item.submenu && item.label) {
@@ -61,7 +63,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
 
-    // ⚠️ clone بعد ما تطبق الحالات
     this.filteredMenuItems = JSON.parse(JSON.stringify(this.menuItems));
 
     const savedCollapsed = localStorage.getItem('sidebarCollapsed');
@@ -74,29 +75,16 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  handleSpecialAction(subItem: any): void {
+  async handleSpecialAction(subItem: any): Promise<void> {
     if (subItem.key === 'تسجيل الخروج') {
-      if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+      const confirmed = await this.toast.confirm('هل أنت متأكد من تسجيل الخروج؟');
+      if (confirmed) {
         this.authService.logout();
         this.router.navigate(['/login']);
-        this.sidebarService.close(); // إغلاق الـ sidebar لو موبايل
+        this.sidebarService.close();
       }
     }
   }
-
-  /*private deleteMyAccount(): void {
-    this.apiService.deleteMyAccount().subscribe({
-      next: (response) => {
-        alert(response.message || 'تم حذف الحساب بنجاح');
-        this.authService.logout();
-        this.router.navigate(['/login']);
-        this.sidebarService.close(); // اختياري: إغلاق السايدبار
-      },
-      error: (err) => {
-        alert(err.message || 'فشل حذف الحساب، حاول مرة أخرى لاحقًا');
-      },
-    });
-  }*/
 
   closeSidebar() {
     this.sidebarService.close();
@@ -149,7 +137,6 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
 
     item.isOpen = !item.isOpen;
 
-    // حفظ حالة الفتح
     if (item.label) {
       localStorage.setItem(`submenu_${item.label}`, item.isOpen.toString());
     }
@@ -163,15 +150,13 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const q = query.toLowerCase();
-
     const result: any[] = [];
 
     for (const section of this.menuItems) {
       const clonedSection: any = { ...section };
       clonedSection.items = [];
 
-      const titleMatches =
-        section.title && section.title.toLowerCase().includes(q);
+      const titleMatches = section.title && section.title.toLowerCase().includes(q);
 
       if (titleMatches) {
         clonedSection.items = JSON.parse(JSON.stringify(section.items || []));
@@ -236,62 +221,37 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.menuItems = [
       {
         items: [
-          {
-            label: 'الصفحة الرئيسية',
-            path: 'dashboard/mainDashboard',
-            icons: 'fas fa-house',
-            isOpen: false,
-          },
+          { label: 'الصفحة الرئيسية', path: 'dashboard/mainDashboard', icons: 'fas fa-house', isOpen: false },
         ],
       },
       {
         items: [
-          {
-            label: 'الاقسام الفرعية',
-            path: 'categories/main-category',
-            icons: 'fas fa-layer-group',
-            isOpen: false,
-          },
+          { label: 'الاقسام الفرعية', path: 'categories/main-category', icons: 'fas fa-layer-group', isOpen: false },
         ],
       },
       {
         items: [
-          {
-            label: 'المحتوي الرأسي',
-            path: 'categories/sub-category',
-            icons: 'fas fa-th-large',
-            isOpen: false,
-          },
+          { label: 'المحتوي الرأسي', path: 'categories/sub-category', icons: 'fas fa-th-large', isOpen: false },
         ],
       },
       {
         items: [
-          {
-            label: 'الاشعارات',
-            path: 'Notificaion/notificaion',
-            icons: 'fas fa-bell',
-            isOpen: false,
-          },
+          { label: 'الاشعارات', path: 'Notificaion/notificaion', icons: 'fas fa-bell', isOpen: false },
         ],
       },
       {
         items: [
-          {
-            label: 'المستخدمين',
-            path: 'app-users',
-            icons: 'fas fa-users',
-            isOpen: false,
-          },
+          { label: 'المستخدمين', path: 'app-users', icons: 'fas fa-users', isOpen: false },
         ],
       },
       {
         items: [
-          {
-            label: 'الطلاب',
-            path: 'students',
-            icons: 'fas fa-user-graduate',
-            isOpen: false,
-          },
+          { label: 'الطلاب', path: 'students', icons: 'fas fa-user-graduate', isOpen: false },
+        ],
+      },
+      {
+        items: [
+          { label: 'الشروط والأحكام', path: 'terms', icons: 'fas fa-file-contract', isOpen: false },
         ],
       },
     ];

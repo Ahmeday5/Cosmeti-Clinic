@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { AppUserService } from '../../services/app-user.service';
 import { AppUser, AppUserDetail } from '../../models/app-user.model';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-app-user',
@@ -20,9 +21,7 @@ export class AppUserComponent implements OnInit, AfterViewInit {
   users: AppUser[] = [];
   hasLoaded = false;
 
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
-  errorMessageModel: string | null = null;
+  private readonly toast = inject(ToastService);
 
   form: FormGroup;
   isEditMode = false;
@@ -54,9 +53,6 @@ export class AppUserComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // ======================
-  // LOAD ALL
-  // ======================
   loadAll(): void {
     this.service.getAll().subscribe({
       next: (data) => {
@@ -64,32 +60,24 @@ export class AppUserComponent implements OnInit, AfterViewInit {
         this.hasLoaded = true;
       },
       error: (err) => {
-        this.errorMessage = err.message;
+        this.toast.error(err.message);
         this.hasLoaded = true;
       },
     });
   }
 
-  // ======================
-  // ADD MODAL
-  // ======================
   openAddModal(): void {
     this.isEditMode = false;
     this.editingId = null;
     this.form.reset();
     this.form.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
     this.form.get('password')?.updateValueAndValidity();
-    this.errorMessageModel = null;
     this.modalInstance.show();
   }
 
-  // ======================
-  // EDIT MODAL
-  // ======================
   openEditModal(id: string): void {
     this.isEditMode = true;
     this.editingId = id;
-    this.errorMessageModel = null;
 
     this.service.getById(id).subscribe({
       next: (data: AppUserDetail) => {
@@ -100,20 +88,14 @@ export class AppUserComponent implements OnInit, AfterViewInit {
           role: data.roles?.[0] ?? '',
           password: '',
         });
-        // password اختياري في التعديل
         this.form.get('password')?.clearValidators();
         this.form.get('password')?.updateValueAndValidity();
         this.modalInstance.show();
       },
-      error: (err) => {
-        this.showError(err.message);
-      },
+      error: (err) => this.toast.error(err.message),
     });
   }
 
-  // ======================
-  // SUBMIT
-  // ======================
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -134,36 +116,27 @@ export class AppUserComponent implements OnInit, AfterViewInit {
 
     request$.subscribe({
       next: () => {
-        this.showSuccess(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
+        this.toast.success(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
         this.modalInstance.hide();
         this.loadAll();
       },
-      error: (err) => {
-        this.errorMessageModel = err.message;
-      },
+      error: (err) => this.toast.error(err.message),
     });
   }
 
-  // ======================
-  // DELETE
-  // ======================
-  deleteUser(id: string): void {
-    if (!confirm('هل تريد حذف هذا المستخدم؟')) return;
+  async deleteUser(id: string): Promise<void> {
+    const confirmed = await this.toast.confirm('هل أنت متأكد من حذف هذا المستخدم؟');
+    if (!confirmed) return;
 
     this.service.delete(id).subscribe({
       next: () => {
-        this.showSuccess('تم الحذف بنجاح');
+        this.toast.success('تم الحذف بنجاح');
         this.loadAll();
       },
-      error: (err) => {
-        this.showError(err.message);
-      },
+      error: (err) => this.toast.error(err.message),
     });
   }
 
-  // ======================
-  // STATS GETTERS
-  // ======================
   get confirmedCount(): number {
     return this.users.filter((u) => u.emailConfirmed).length;
   }
@@ -174,18 +147,5 @@ export class AppUserComponent implements OnInit, AfterViewInit {
 
   get lockedCount(): number {
     return this.users.filter((u) => u.lockoutEnabled).length;
-  }
-
-  // ======================
-  // HELPERS
-  // ======================
-  showSuccess(msg: string): void {
-    this.successMessage = msg;
-    setTimeout(() => (this.successMessage = null), 3000);
-  }
-
-  showError(msg: string): void {
-    this.errorMessage = msg;
-    setTimeout(() => (this.errorMessage = null), 5000);
   }
 }

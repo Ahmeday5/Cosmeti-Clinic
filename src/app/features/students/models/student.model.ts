@@ -11,6 +11,7 @@ export interface Student {
   academicQualification: string;
   collegeName: string;
   specification: string;
+  categoryTypes: string[];
   isActive: boolean;
   createdAt: string;
 }
@@ -38,4 +39,8 @@ export interface ActivationResponse {
   statusCode: number;
   message: string;
   data: number;
+}
+
+export interface UpdateCategoryTypesDto {
+  categoryTypes: string[];
 }

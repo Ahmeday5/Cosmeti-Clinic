@@ -1,0 +1,77 @@
+<div class="terms-page" dir="rtl">
+  <div class="container-fluid py-4">
+
+    <!-- ─── Page Header ─────────────────────────────────────────────────── -->
+    <div class="page-header mb-4">
+      <div class="d-flex align-items-center gap-3 mb-1">
+        <div class="page-icon">
+          <i class="fas fa-file-contract"></i>
+        </div>
+        <div>
+          <h2 class="page-title mb-0">الشروط والأحكام</h2>
+          <p class="page-subtitle mb-0">تعديل وإدارة محتوى الشروط والأحكام المعروض للمستخدمين</p>
+        </div>
+      </div>
+      @if(terms?.updatedAt) {
+      <div class="last-updated">
+        <i class="fas fa-clock me-1"></i>
+        آخر تحديث: <strong>{{ formatDate(terms!.updatedAt) }}</strong>
+      </div>
+      }
+    </div>
+
+    <!-- ─── Editor Card ──────────────────────────────────────────────────── -->
+    <div class="editor-card">
+      <div class="editor-card__header">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fas fa-edit text-main"></i>
+          <span class="fw-bold">تحرير المحتوى</span>
+        </div>
+        <div class="char-count">
+          {{ content.length }} حرف
+        </div>
+      </div>
+
+      <div class="editor-card__body">
+        @if(!hasLoaded) {
+        <div class="skeleton-loader">
+          <div class="skeleton-line w-100"></div>
+          <div class="skeleton-line w-85"></div>
+          <div class="skeleton-line w-92"></div>
+          <div class="skeleton-line w-78"></div>
+          <div class="skeleton-line w-88"></div>
+        </div>
+        } @else {
+        <textarea
+          class="terms-editor"
+          [(ngModel)]="content"
+          placeholder="اكتب الشروط والأحكام هنا..."
+          rows="18"
+          [disabled]="isSaving"
+        ></textarea>
+        }
+      </div>
+
+      <div class="editor-card__footer">
+        <div class="footer-note">
+          <i class="fas fa-info-circle me-1"></i>
+          سيتم عرض هذا المحتوى للمستخدمين عند التسجيل
+        </div>
+        <button
+          class="btn-save"
+          (click)="save()"
+          [disabled]="isSaving || !hasLoaded || !content.trim()"
+        >
+          @if(isSaving) {
+          <span class="save-spinner"></span>
+          <span>جاري الحفظ...</span>
+          } @else {
+          <i class="fas fa-save me-1"></i>
+          <span>حفظ التغييرات</span>
+          }
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

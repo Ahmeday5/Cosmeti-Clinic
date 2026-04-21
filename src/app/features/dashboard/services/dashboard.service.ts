@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { Category, CategoryResponse } from '../models/dashboard.model';
+import { Category, CategoryResponse, CategoryTypes } from '../models/dashboard.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,10 +9,14 @@ import { Category, CategoryResponse } from '../models/dashboard.model';
 export class DashboardService {
   private readonly apiService = inject(ApiService);
   private readonly baseEndpoint = '/api/Dashboard/category';
+  private readonly typesEndpoint = '/api/Auth/category-types';
 
   constructor() {}
 
-  // ====================== GET ALL ======================
+  getCategoryTypes(): Observable<CategoryTypes[]> {
+    return this.apiService.get<CategoryTypes[]>(this.typesEndpoint);
+  }
+
   getAll(): Observable<Category[]> {
     return this.apiService.get<Category[]>(this.baseEndpoint);
   }

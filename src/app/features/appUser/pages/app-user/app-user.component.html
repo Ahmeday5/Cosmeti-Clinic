@@ -13,20 +13,6 @@
       </button>
     </div>
 
-    <!-- ================= Alerts ================= -->
-    @if(successMessage){
-    <div class="alert-custom alert-custom--success d-flex align-items-center gap-2 mb-4">
-      <i class="fas fa-check-circle"></i>
-      <span>{{ successMessage }}</span>
-    </div>
-    }
-    @if(errorMessage){
-    <div class="alert-custom alert-custom--danger d-flex align-items-center gap-2 mb-4">
-      <i class="fas fa-exclamation-circle"></i>
-      <span>{{ errorMessage }}</span>
-    </div>
-    }
-
     <!-- ================= Table Card ================= -->
     <div class="table-card custom-table">
       <div class="table-card__header d-flex align-items-center justify-content-between px-4 py-3">
@@ -125,13 +111,6 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-
-      @if(errorMessageModel){
-      <div class="alert-custom alert-custom--danger mx-4 mt-3 d-flex align-items-center gap-2">
-        <i class="fas fa-exclamation-circle"></i>
-        <span>{{ errorMessageModel }}</span>
-      </div>
-      }
 
       <!-- Form -->
       <form [formGroup]="form" (ngSubmit)="onSubmit()">

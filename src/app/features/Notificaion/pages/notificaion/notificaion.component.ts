@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../../environments/environment.development';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-notificaion',
@@ -15,40 +16,31 @@ import { environment } from '../../../../../environments/environment.development
 export class NotificaionComponent {
   title: string = '';
   body: string = '';
-  topic: string = 'all'; // الافتراضي
-  successMessage: string = '';
-  errorMessage: string = '';
+  topic: string = 'all';
   isLoading: boolean = false;
+
+  private readonly toast = inject(ToastService);
   private readonly baseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
   async sendNotification() {
-    this.successMessage = '';
-    this.errorMessage = '';
-
     this.isLoading = true;
 
     try {
-      const response = await firstValueFrom(
+      await firstValueFrom(
         this.http.post<any>(`${this.baseUrl}/api/Notification/send`, {
           title: this.title,
           body: this.body,
           topic: this.topic,
         }),
       );
-      console.log('Notification sent:', response);
-      this.successMessage = 'تم إرسال الإشعار بنجاح';
-      setTimeout(() => {
-        this.successMessage = '';
-        // 👇 تفريغ الحقول بعد النجاح
-        this.title = '';
-        this.body = '';
-        this.topic = 'all';
-      }, 2000);
+      this.toast.success('تم إرسال الإشعار بنجاح');
+      this.title = '';
+      this.body = '';
+      this.topic = 'all';
     } catch (error: any) {
-      console.error('Error sending notification:', error);
-      this.errorMessage = 'فشل في إرسال الإشعار';
+      this.toast.error('فشل في إرسال الإشعار');
     } finally {
       this.isLoading = false;
     }

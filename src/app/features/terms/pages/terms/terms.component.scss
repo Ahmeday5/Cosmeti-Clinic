@@ -1,0 +1,197 @@
+.terms-page {
+  // ─── Page Header ──────────────────────────────────────────────────────
+  .page-header {
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(143, 199, 69, 0.2);
+  }
+
+  .page-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--main-color), #6fa832);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(143, 199, 69, 0.35);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--main-color);
+  }
+
+  .page-subtitle {
+    font-size: 0.875rem;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .last-updated {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    color: #aaa;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    strong { color: #666; }
+  }
+
+  // ─── Editor Card ──────────────────────────────────────────────────────
+  .editor-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: rgba(143, 199, 69, 0.04);
+      border-bottom: 1px solid rgba(143, 199, 69, 0.15);
+      font-size: 0.875rem;
+
+      .text-main { color: var(--main-color); }
+    }
+
+    &__body {
+      padding: 20px;
+    }
+
+    &__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 20px;
+      background: rgba(143, 199, 69, 0.03);
+      border-top: 1px solid rgba(143, 199, 69, 0.12);
+    }
+  }
+
+  .char-count {
+    font-size: 0.78rem;
+    color: #aaa;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 3px 10px;
+    border-radius: 10px;
+  }
+
+  // ─── Editor Textarea ──────────────────────────────────────────────────
+  .terms-editor {
+    width: 100%;
+    border: 1.5px solid rgba(143, 199, 69, 0.25);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: #333;
+    resize: vertical;
+    min-height: 300px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+    direction: rtl;
+
+    &:focus {
+      border-color: var(--main-color);
+      box-shadow: 0 0 0 3px rgba(143, 199, 69, 0.12);
+      background: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    &::placeholder { color: #bbb; }
+  }
+
+  // ─── Skeleton ─────────────────────────────────────────────────────────
+  .skeleton-loader {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 0;
+  }
+
+  .skeleton-line {
+    height: 16px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+
+    &.w-85 { width: 85%; }
+    &.w-92 { width: 92%; }
+    &.w-78 { width: 78%; }
+    &.w-88 { width: 88%; }
+    &.w-100 { width: 100%; }
+  }
+
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
+
+  // ─── Footer ───────────────────────────────────────────────────────────
+  .footer-note {
+    font-size: 0.8rem;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    i { color: #bbb; }
+  }
+
+  .btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--main-color), #6fa832);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(143, 199, 69, 0.35);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 18px rgba(143, 199, 69, 0.45);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  .save-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+}

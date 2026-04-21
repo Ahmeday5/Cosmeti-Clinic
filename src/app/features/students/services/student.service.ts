@@ -7,22 +7,18 @@ import {
   PaginatedResponse,
   Student,
   StudentFilterParams,
+  UpdateCategoryTypesDto,
 } from '../models/student.model';
+import { CategoryTypes } from '../../dashboard/models/dashboard.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class StudentService {
   private readonly api = inject(ApiService);
   private readonly studentsEndpoint = '/api/Dashboard/students';
   private readonly countriesEndpoint = '/api/Dashboard/countries';
+  private readonly categoryTypesEndpoint = '/api/Auth/category-types';
 
-  // ==========================
-  // GET STUDENTS (paginated + filters)
-  // ==========================
-  getStudents(
-    params: StudentFilterParams,
-  ): Observable<PaginatedResponse<Student>> {
+  getStudents(params: StudentFilterParams): Observable<PaginatedResponse<Student>> {
     let endpoint = `${this.studentsEndpoint}?pageIndex=${params.pageIndex}&pageSize=${params.pageSize}`;
 
     if (params.search?.trim()) {
@@ -36,23 +32,22 @@ export class StudentService {
     return this.api.get<PaginatedResponse<Student>>(endpoint);
   }
 
-  // ==========================
-  // GET COUNTRIES
-  // ==========================
   getCountries(): Observable<Country[]> {
     return this.api.get<Country[]>(this.countriesEndpoint);
   }
 
-  // ==========================
-  // TOGGLE ACTIVATION
-  // ==========================
-  toggleActivation(
-    id: number,
-    isActive: boolean,
-  ): Observable<ActivationResponse> {
+  getCategoryTypes(): Observable<CategoryTypes[]> {
+    return this.api.get<CategoryTypes[]>(this.categoryTypesEndpoint);
+  }
+
+  toggleActivation(id: number, isActive: boolean): Observable<ActivationResponse> {
     return this.api.put<ActivationResponse>(
       `/api/Dashboard/student/${id}/activation?isActive=${isActive}`,
       {},
     );
+  }
+
+  updateCategoryTypes(id: number, dto: UpdateCategoryTypesDto): Observable<void> {
+    return this.api.put<void>(`/api/Dashboard/student/${id}/category-types`, dto);
   }
 }

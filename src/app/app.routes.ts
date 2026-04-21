@@ -65,6 +65,11 @@ export const routes: Routes = [
             (m) => m.STUDENT_ROUTES,
           ),
       },
+      {
+        path: 'terms',
+        loadChildren: () =>
+          import('./features/terms/terms.routes').then((m) => m.TERMS_ROUTES),
+      },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

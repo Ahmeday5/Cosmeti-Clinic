@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -7,8 +7,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { DashboardService } from '../../services/dashboard.service'; // ← تأكد من المسار الصحيح
-import { Category } from '../../models/dashboard.model'; // ← تأكد من المسار
+import { DashboardService } from '../../services/dashboard.service';
+import { Category, CategoryTypes } from '../../models/dashboard.model';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,11 +20,12 @@ import { Category } from '../../models/dashboard.model'; // ← تأكد من ا
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   categories: Category[] = [];
+  CategoriesTypes: CategoryTypes[] = [];
   hasLoaded = false;
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
 
-  errorMessageModel: string | null = null;
+  private readonly toast = inject(ToastService);
+
+  @ViewChild('fileInput') private fileInputRef!: ElementRef<HTMLInputElement>;
 
   categoryForm: FormGroup;
   isEditMode = false;
@@ -31,8 +33,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   selectedFile: File | null = null;
   imagePreview: string | null = null;
 
-  // ====================== المتغير الخاص بالمودال ======================
-  private modalInstance: any; // هيحتوي على كائن Bootstrap Modal
+  private modalInstance: any;
 
   constructor(
     private categoryService: DashboardService,
@@ -40,58 +41,67 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private router: Router,
   ) {
     this.categoryForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
+      category: ['', [Validators.required]],
+      title: ['', [Validators.required]],
       description: ['', [Validators.required, Validators.minLength(10)]],
     });
   }
 
   ngOnInit(): void {
     this.loadCategories();
+    this.loadCategoriesTypes();
   }
 
-  // ====================== تهيئة المودال بعد تحميل الـ DOM ======================
   ngAfterViewInit(): void {
-    const modalElement = document.getElementById(
-      'addSectionModal',
-    ) as HTMLElement;
+    const modalElement = document.getElementById('addSectionModal') as HTMLElement;
     if (modalElement) {
-      // هنا نستخدم window.bootstrap عشان TypeScript ما يشتكيش
       this.modalInstance = new (window as any).bootstrap.Modal(modalElement, {
-        keyboard: false, // ما يقفلش بالـ ESC
+        keyboard: false,
       });
     }
   }
 
-  // ====================== تحميل الكاتيجوريز ======================
-  loadCategories(): void {
+  loadCategoriesTypes(): void {
+    this.categoryService.getCategoryTypes().subscribe({
+      next: (data) => {
+        this.CategoriesTypes = data;
+        this.hasLoaded = true;
+      },
+      error: (err) => {
+        this.toast.error(err.message);
+        this.hasLoaded = true;
+      },
+    });
+  }
 
+  loadCategories(): void {
     this.categoryService.getAll().subscribe({
       next: (data) => {
         this.categories = data;
         this.hasLoaded = true;
       },
       error: (err) => {
-        this.errorMessage = err.message;
+        this.toast.error(err.message);
         this.hasLoaded = true;
       },
     });
   }
 
-  // ====================== فتح المودال (إضافة جديدة) ======================
   openAddModal(): void {
     this.isEditMode = false;
     this.editingId = null;
     this.categoryForm.reset();
     this.selectedFile = null;
     this.imagePreview = null;
+    this.fileInputRef.nativeElement.value = '';
     this.modalInstance?.show();
   }
 
-  // ====================== فتح المودال (تعديل) ======================
   openEditModal(category: Category): void {
     this.isEditMode = true;
     this.editingId = category.id;
     this.categoryForm.patchValue({
+      category: category.category,
       title: category.title,
       description: category.description,
     });
@@ -100,12 +110,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.modalInstance?.show();
   }
 
-  // ====================== إغلاق المودال (يدوي) ======================
   closeModal(): void {
     this.modalInstance?.hide();
   }
 
-  // ====================== اختيار صورة + Preview ======================
+  onCategoryTypeChange(event: Event): void {
+    const name = (event.target as HTMLSelectElement).value;
+    const selected = this.CategoriesTypes.find((t) => t.name === name);
+    if (selected) {
+      this.categoryForm.patchValue({
+        category: selected.name,
+        title: selected.arabicName,
+      });
+    }
+  }
+
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -114,7 +133,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // ====================== حفظ (Add or Update) ======================
   onSubmit(): void {
     if (this.categoryForm.invalid) {
       this.categoryForm.markAllAsTouched();
@@ -122,60 +140,44 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     if (!this.selectedFile && !this.isEditMode) {
-      this.showErrorModel('يرجي رفع صورة قسم صالحة');
-      return; // مهم جدا عشان يمنع ارسال الداتا
+      this.toast.error('يرجي رفع صورة قسم صالحة');
+      return;
     }
 
     const formData = new FormData();
     formData.append('Title', this.categoryForm.get('title')!.value);
     formData.append('Description', this.categoryForm.get('description')!.value);
+    formData.append('Category', this.categoryForm.get('category')!.value);
 
     if (this.selectedFile) {
       formData.append('Image', this.selectedFile);
     }
 
-
-    const request$ =
-      this.isEditMode && this.editingId
-        ? this.categoryService.update(this.editingId, formData)
-        : this.categoryService.create(formData);
+    const request$ = this.isEditMode && this.editingId
+      ? this.categoryService.update(this.editingId, formData)
+      : this.categoryService.create(formData);
 
     request$.subscribe({
-      next: (res) => {
-        this.showSuccess(
-          this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح',
-        );
+      next: () => {
+        this.toast.success(this.isEditMode ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح');
         this.closeModal();
         this.loadCategories();
       },
-      error: (err) => {
-        this.errorMessageModel = err.message;
-      },
+      error: (err) => this.toast.error(err.message),
     });
   }
 
-  // ====================== حذف ======================
-  deleteCategory(id: number): void {
-    if (!confirm('هل أنت متأكد من حذف هذا القسم؟')) return;
+  async deleteCategory(id: number): Promise<void> {
+    const confirmed = await this.toast.confirm('هل أنت متأكد من حذف هذا القسم؟');
+    if (!confirmed) return;
 
     this.categoryService.delete(id).subscribe({
-      next: (res) => {
-        this.showSuccess('تم الحذف بنجاح');
+      next: () => {
+        this.toast.success('تم الحذف بنجاح');
         this.loadCategories();
       },
-      error: (err) => (this.errorMessage = err.message),
-      complete: () => (""),
+      error: (err) => this.toast.error(err.message),
     });
-  }
-
-  private showSuccess(msg: string): void {
-    this.successMessage = msg;
-    setTimeout(() => (this.successMessage = null), 2000);
-  }
-
-  private showErrorModel(msg: string): void {
-    this.errorMessageModel = msg;
-    setTimeout(() => (this.errorMessageModel = null), 3000);
   }
 
   goToCategory(categoryId: number) {

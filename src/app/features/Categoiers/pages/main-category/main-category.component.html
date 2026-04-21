@@ -12,18 +12,6 @@
       </div>
     </div>
 
-    @if(successMessage){
-    <div class="alert alert-success">
-      {{successMessage}}
-    </div>
-    }
-
-    @if(errorMessage){
-    <div class="alert alert-danger">
-      {{errorMessage}}
-    </div>
-    }
-
     <div class="row mt-1 g-3">
       @if(!hasLoaded) {
       <!-- فاضي خالص عشان عندك loader global -->
@@ -83,12 +71,6 @@
             <button type="button" class="btn-close m-0" (click)="modalInstance.hide()" aria-label="Close">
             </button>
           </div>
-
-          @if(errorMessageModel){
-          <div class="alert alert-danger">
-            {{errorMessageModel}}
-          </div>
-          }
 
           <!-- ================= Form ================= -->
           <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -152,7 +134,7 @@
 
               <div class="mb-3">
                 <label class="form-label">الصورة</label>
-                <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
+                <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)" #fileInput>
                 <!-- preview -->
                 @if(imagePreview){
                 <div class="mt-3 text-center">

@@ -62,8 +62,8 @@
   width: 17vw;
   max-width: 280px;
   min-width: 250px;
-  height: calc(100vh - 100px);
-  background: linear-gradient(to bottom, #6a994e, #a7c957);
+  height: calc(100vh - 68px);
+  background: linear-gradient(135deg, #6a994e 0%, #a7c957 100%);
   overflow-y: auto;
   border-bottom-left-radius: 80px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.09);
@@ -216,9 +216,9 @@
 @media (max-width: 992px) {
   .sidebar {
     position: fixed;
-    top: 100px; /* تحت الهيدر */
+    top: 68px; /* تحت الهيدر */
     right: 0;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 68px);
     transform: translateX(100%);
     z-index: 10000;
   }
