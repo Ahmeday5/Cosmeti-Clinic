@@ -131,6 +131,7 @@ body {
   color: var(--main-color);
   cursor: pointer;
   height: 100% !important;
+  transition: all 0.3s ease;
 }
 
 .card:hover {

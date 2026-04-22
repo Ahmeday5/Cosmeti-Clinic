@@ -6,11 +6,36 @@
   margin-bottom: 15px;
 }
 
+// ────── Content Wrapper ──────
 .content-product {
   background: var(--bg-main);
-  box-shadow: var(--box-shadow);
-  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(143, 199, 69, .2);
+  padding: 12px 8px;
   margin: 12px 0;
-  border-radius: 12px;
-  border: 1px solid var(--main-color);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, .04);
+  min-height: 160px;
+}
+
+// ────── Empty State ──────
+.not-found {
+  flex-direction: column;
+  gap: 12px;
+  padding: 56px 20px;
+  color: #aaa;
+
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #bbb;
+    margin: 0;
+  }
+
+  &::before {
+    content: '\f49e';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 40px;
+    color: var(--third-color);
+  }
 }

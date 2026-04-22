@@ -18,7 +18,9 @@ export class StudentService {
   private readonly countriesEndpoint = '/api/Dashboard/countries';
   private readonly categoryTypesEndpoint = '/api/Auth/category-types';
 
-  getStudents(params: StudentFilterParams): Observable<PaginatedResponse<Student>> {
+  getStudents(
+    params: StudentFilterParams,
+  ): Observable<PaginatedResponse<Student>> {
     let endpoint = `${this.studentsEndpoint}?pageIndex=${params.pageIndex}&pageSize=${params.pageSize}`;
 
     if (params.search?.trim()) {
@@ -40,14 +42,29 @@ export class StudentService {
     return this.api.get<CategoryTypes[]>(this.categoryTypesEndpoint);
   }
 
-  toggleActivation(id: number, isActive: boolean): Observable<ActivationResponse> {
+  toggleActivation(
+    id: number,
+    isActive: boolean,
+  ): Observable<ActivationResponse> {
     return this.api.put<ActivationResponse>(
       `/api/Dashboard/student/${id}/activation?isActive=${isActive}`,
       {},
     );
   }
 
-  updateCategoryTypes(id: number, dto: UpdateCategoryTypesDto): Observable<void> {
-    return this.api.put<void>(`/api/Dashboard/student/${id}/category-types`, dto);
+  updateCategoryTypes(
+    id: number,
+    dto: UpdateCategoryTypesDto,
+  ): Observable<void> {
+    return this.api.put<void>(
+      `/api/Dashboard/student/${id}/category-types`,
+      dto,
+    );
+  }
+
+ delete(id: number): Observable<ActivationResponse> {
+    return this.api.delete<ActivationResponse>(
+      `/api/Dashboard/student/${id}`,
+    );
   }
 }

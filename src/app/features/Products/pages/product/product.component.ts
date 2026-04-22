@@ -97,7 +97,7 @@ export class ProductComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    const modal = document.getElementById('subCategoryModal');
+    const modal = document.getElementById('ProductModal');
     if (modal) {
       this.modalInstance = new (window as any).bootstrap.Modal(modal);
     }
@@ -149,11 +149,12 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   openAddModal() {
     this.isEditMode = false;
+    this.selectedBlockType = null;
     this.form.reset();
     this.selectedFile = null;
     this.imagePreview = null;
-    this.fileInputRef.nativeElement.value = '';
-
+    if (this.fileInputRef) this.fileInputRef.nativeElement.value = '';
+    
     if (this.headContentId) {
       this.service.getNextSortOrder(this.headContentId).subscribe({
         next: (res) => {
@@ -174,10 +175,11 @@ export class ProductComponent implements OnInit, AfterViewInit {
 
   openAddSubBlock(parentId: number) {
     this.isEditMode = false;
+    this.selectedBlockType = null;
     this.form.reset();
     this.selectedFile = null;
     this.imagePreview = null;
-    this.fileInputRef.nativeElement.value = '';
+    if (this.fileInputRef) this.fileInputRef.nativeElement.value = '';
 
     this.form.patchValue({
       headContentId: this.headContentId,

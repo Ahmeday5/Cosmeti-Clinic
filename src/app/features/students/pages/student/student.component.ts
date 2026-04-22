@@ -229,6 +229,23 @@ export class StudentComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  async deleteStudent(student: Student): Promise<void> {
+    const confirmed = await this.toast.confirm(
+      `هل أنت متأكد من حذف الطالب ${student.name}؟`,
+    );
+    if (!confirmed) return;
+
+    this.studentService.delete(student.id).subscribe({
+      next: (res) => {
+        this.toast.success(res.message);
+        this.loadStudents();
+      },
+      error: (err) => {
+        this.toast.error(err.message);
+      },
+    });
+  }
+
   // ── Utils ────────────────────────────────────────────────────────────────────
   formatDate(dateStr: string): string {
     return dateStr.split('T')[0];

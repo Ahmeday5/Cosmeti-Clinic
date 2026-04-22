@@ -138,13 +138,20 @@
               <td><span class="date-text">{{ formatDate(student.createdAt) }}</span></td>
 
               <!-- Actions -->
-              <td>
+              <td class="d-flex align-items-center justify-content-center gap-2">
                 <button
                   class="btn-edit-types"
                   (click)="openCategoryTypesModal(student)"
                   title="تعديل التخصصات"
                 >
                   <i class="fas fa-tags"></i>
+                </button>
+                <button
+                  class="btn-trash-types"
+                  (click)="deleteStudent(student)"
+                  title="حذف الطالب"
+                >
+                  <i class="fas fa-trash"></i>
                 </button>
               </td>
             </tr>

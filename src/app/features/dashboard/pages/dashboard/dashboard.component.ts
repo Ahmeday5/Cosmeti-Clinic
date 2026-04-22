@@ -77,6 +77,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   loadCategories(): void {
     this.categoryService.getAll().subscribe({
       next: (data) => {
+        console.log(data);
         this.categories = data;
         this.hasLoaded = true;
       },
